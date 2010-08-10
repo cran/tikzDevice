@@ -11,7 +11,7 @@ function( texString, cex = 1, face= 1){
 	# Check to see if we have a width stored in
 	# our dictionary for this string.
 	width <- queryMetricsDictionary( TeXMetrics )
-
+	
 	if( width > 0 ){
 
 		# Positive string width means there was a
@@ -128,7 +128,7 @@ function( TeXMetrics ){
 	writeLines("\\batchmode", texIn)
 
 	# Begin a tikz picture.
-	writeLines("\\begin{tikzpicture}", texIn)
+	writeLines("\\begin{document}\n\\begin{tikzpicture}", texIn)
 
 	# Insert the value of cex into the node options.
 	nodeOpts <- paste('\\node[inner sep=0pt, outer sep=0pt, scale=',
@@ -198,7 +198,7 @@ function( TeXMetrics ){
 
 	)# End switch for  metric type.
 
-	writeLines( paste( nodeOpts, ' (TeX) {', nodeContent, "};", sep=''), texIn)
+	writeLines( paste( nodeOpts, ' (TeX) {', nodeContent, "%\n};", sep=''), texIn)
 
 	# We calculate width for both characters and strings.
 	writeLines("\\path let \\p1 = ($(TeX.east) - (TeX.west)$), 
