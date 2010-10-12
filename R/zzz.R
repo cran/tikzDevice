@@ -17,8 +17,8 @@ function(libname, pkgname) {
 
   versionInfo <- read.dcf(file.path( libname, pkgname, "DESCRIPTION"))
 
-  versionInfo <- gettextf("%s: %s (v%s)", versionInfo[, "Package"], versionInfo[, "Title"],
-    as.character(versionInfo[, "Version"]))
+  versionInfo <- gettextf( "%s: %s (v%s)", versionInfo[, "Package"], versionInfo[, "Title"],
+    getTikzDeviceVersion() )
 
   versionInfo <- c( paste(strwrap(versionInfo),collapse='\n'), "Checking for a LaTeX compiler...\n")
 
@@ -32,11 +32,12 @@ function(libname, pkgname) {
     Sys.setenv("PATH" = Sys.getenv("PATH"))
     latexPath <<- Sys.which( paste( pathToTeX ) )
 
-    if( latexPath[1] != "" ){
+    # Check to see if the path leads to an executible
+    if( file.access(latexPath[1], 1) == 0 ){
       options( tikzLatex=latexPath )
       options( tikzLatexDefault=latexPath )
       foundLatex <<- TRUE
-      checked <<- paste( "\nA working LaTeX compiler was found in:\n\t",pathDesc,
+      checked <<- paste( "\nA working LaTeX compiler was found by checking:\n\t",pathDesc,
         "\n\nGlobal option tikzLatex set to:\n\t",latexPath,'\n',sep='' )
       return( TRUE )
     }else{
@@ -48,18 +49,28 @@ function(libname, pkgname) {
 
 
   testLocs <- c( ifelse( is.null(getOption('tikzLatex')), "", getOption('tikzLatex') ),
-    Sys.getenv("R_LATEXCMD"), 
-    Sys.getenv("R_PDFLATEXCMD"), 
+    Sys.getenv("R_LATEXCMD"),
+    Sys.getenv("R_PDFLATEXCMD"),
     ifelse( is.null(getOption('latexcmd')), "NULL", getOption('latexcmd') ),
-    'latex',
-    'pdflatex')
+    'pdflatex',
+    'latex')
 
   testDescs <- c( "A pre-existing value of the global option tikzLatex",
-    "The R environment variable R_LATEXCMD", 
-    "The R environment variable R_PDFLATEXCMD", 
+    "The R environment variable R_LATEXCMD",
+    "The R environment variable R_PDFLATEXCMD",
     "The global option latexcmd",
-    "The PATH using the command latex", 
-    "The PATH using the command pdflatex" )
+    "The PATH using the command pdflatex",
+    "The PATH using the command latex")
+
+  # Non-Windows users are likely to use some derivative of TeX Live.  This next
+  # test primarily covers the fact that R.app does not include `/usr/texbin` on
+  # the search path on OS X.
+  if( .Platform[['OS.type']] == 'unix' ){
+
+    testLocs <- c( testLocs, '/usr/texbin/pdflatex' )
+    testDescs <- c( testDescs, 'The directory /usr/texbin for `pdflatex`' ) 
+
+  }
 
   for( i in 1:length(testLocs) ){
     if( latexTest( testLocs[i], testDescs[i] ) ){ break }
