@@ -1,8 +1,8 @@
 Package: tikzDevice
 Type: Package
 Title: A Device for R Graphics Output in PGF/TikZ Format
-Version: 0.5.1
-Date: 2010-10-09
+Version: 0.5.2
+Date: 2010-15-10
 Author: Charlie Sharpsteen and Cameron Bracken
 Maintainer: The tikzDevice team
         <tikzdevice-bugs@lists.r-forge.r-project.org>
@@ -19,8 +19,6 @@ License: GPL (>= 2.0)
 Depends: filehash
 SystemRequirements: pgf (>=2.00)
 LazyLoad: yes
+Packaged: 2010-10-15 04:40:41 UTC; sharpie
 Repository: CRAN
-Repository/R-Forge/Project: tikzdevice
-Repository/R-Forge/Revision: 28
-Date/Publication: 2010-10-12 07:04:09
-Packaged: 2010-10-10 20:46:43 UTC; rforge
+Date/Publication: 2010-10-15 10:06:52
