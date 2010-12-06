@@ -1,0 +1,122 @@
+% !TEX TS-program = Sweave
+
+\documentclass{article}
+
+% \VignetteIndexEntry{The tikzDevice Package}
+% \VignetteDepends{tikzDevice}
+% \usepackage{Sweave}
+\usepackage[scaled=.9]{couriers}
+\usepackage[colorlinks]{hyperref}
+
+% Extra text effects (strikethrough)
+\usepackage{ulem}
+
+
+% Sexyness
+\usepackage{tikz}
+\usetikzlibrary{calc,positioning}
+\usetikzlibrary{shapes.multipart,shapes.geometric,shapes.symbols,shapes.arrows}
+\usetikzlibrary{decorations.shapes,decorations.text,decorations.pathreplacing}
+
+% Page layout
+\usepackage[parfill]{parskip}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{epigraph}
+\usepackage{multicol}
+
+% Graphics control.
+\usepackage{graphicx}
+\usepackage{float}
+
+% Bibliography
+\usepackage{natbib}
+\bibliographystyle{agufull04}
+
+% Extra pretty pretty printing.
+\usepackage{tikzCodeBlock}
+
+
+% Macros created for this document
+\input{tikzDeviceMacros}
+
+% Make sure you input tikzDeviceMacros first- or
+% LaTeX will smite you!
+\usepackage{Sweave}
+
+
+
+
+\title{The \pkg{tikzDevice} Package\\
+	{\large\url{http://r-forge.r-project.org/projects/tikzdevice}}
+}
+\author{Charlie Sharpsteen and Cameron Bracken}
+\date{Version 0.5.3-{\bfseries\color{red}Beta}\qquad December, 2010}
+
+\begin{document}
+	
+
+
+
+%----------------------------  Cover Page -----------------------------------------------------------
+
+\thispagestyle{empty}
+
+% A more complex title page
+
+% HAH! God bless the pgf manual- I've been trying to solve this for
+% ever- \vfill has no effect unless you bracket your contents in empty
+% \vboxes.
+\vbox{}
+\vspace{0.5\textheight}
+\begin{tikzpicture}[remember picture,overlay]
+
+	\node[anchor=west,scale=2, inner sep=0pt, outer sep=0pt] (title) at (-1cm,0) 
+		{\LARGE\bfseries{\color{red}\TikZ}\thinspace\Huge Device};
+	
+	\draw[line width=5pt] ([yshift=-5pt]title.base west) -- ([yshift=-5pt]title.base east);	
+
+
+	\coordinate (titleOut) at ($(title.north east) + (24pt,0pt)$);
+	\coordinate (titleIn) at ($(title.base west) - (6pt,24pt)$);
+		
+	\node[color=black!80,below=24pt of title.base east,anchor=east] (sub)
+		{\bfseries\itshape\Large \LaTeX Graphics for R};
+
+\end{tikzpicture}
+\vfill	
+\vbox{}
+
+\begin{tikzpicture}[remember picture,overlay,>=stealth]
+
+	\node (R) at ($(current page.south west) + (18cm,2cm)$)
+		{\scalebox{0.85}{\includegraphics[width=0.8\textwidth]{img/Rlogo}}};
+
+	\tikzset{
+		bigger/.style={decoration={shape start size=.125cm, shape end size=.5cm}},
+		decoration={shape backgrounds,
+			shape sep={.25cm, between borders},shape scaled,shape=circle}
+	}
+			
+	\fill[decorate,bigger, blue!25] (R) to[out=190,in=240] (titleIn);	
+	
+\end{tikzpicture}
+
+\begin{tikzpicture}[overlay,remember picture]
+
+	% Low-level PGF voodoo
+	% Something is seriously borked with current page.north east,
+	% it's not where you would expect it to be :P
+	\newdimen\overlayXoff
+	\newdimen\overlayYoff
+	\pgfextracty{\overlayXoff}{\pgfpointanchor{current page}{north east}}
+	\pgfextracty{\overlayYoff}{\pgfpointanchor{current page}{north east}}
+	
+	\pgfmathparse{\overlayYoff - 4.5in}
+	\overlayYoff = \pgfmathresult pt
+	
+	\pgfmathparse{\overlayXoff - 7in}
+	\overlayXoff = \pgfmathresult pt
+	
+	
+	\begin{scope}[x=1pt,y=1pt,yshift=\overlayYoff,xshift=\overlayXoff]
+
