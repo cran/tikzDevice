@@ -16,12 +16,17 @@ getTikzDeviceVersion <- function(){
   
   # Returns the version of the currently installed tikzDevice 
   # for use in Print_TikZ_Header.
+  version_file <- system.file('GIT_VERSION', package = 'tikzDevice')
+  if (file.exists(version_file)) {
+    version_num <- readLines(version_file)[1]
+  } else {
+    version_num <- paste('~',
+      read.dcf(system.file('DESCRIPTION', package = 'tikzDevice'),
+        fields = 'Version')
+    )
+  }
 
-  return(
-    readLines(
-      system.file('GIT_VERSION', package = 'tikzDevice')
-    )[1]
-  )
+  return( version_num )
 
 }
 
@@ -60,9 +65,36 @@ getDocumentPointsize <- function( docString ){
 }
 
 
+#' Reset tikzDevice options.
+#' Reset all the \pkg{tikzDevice} options to their default values.
+#'
+#' Specifically resets the options \code{tikzLatex},
+#' \code{tikzDocumentDeclaration}, \code{tikzLatexPackages},
+#' \code{tikzMetricPackages}, \code{tikzFooter}, \code{tikzSanitizeCharacters}
+#' and \code{tikzReplacementCharacters}.
+#'
+#' @param overwrite Should values that are allready set in \code{options()} be
+#'   overwritten?
+#' @return Nothing returned.
+#'
+#' @author Cameron Bracken \email{cameron.bracken@@gmail.com} and Charlie
+#'   Sharpsteen \email{source@@sharpsteen.net}
+#'
+#' @seealso \code{\link{tikz}}
+#'
+#' @examples
+#'
+#' 	print( options( 'tikzDocumentDeclaration' ) )
+#' 	options( tikzDocumentDeclaration = 'foo' )
+#' 	setTikzDefaults()
+#' 	print( options( 'tikzDocumentDeclaration' ) )
+#'
+#' @export
 setTikzDefaults <- function( overwrite = TRUE ){
 
   tikzDefaults <- list(
+
+    tikzDefaultEngine = 'pdftex',
 
     tikzLatex = getOption( 'tikzLatexDefault' ),
  
@@ -75,8 +107,17 @@ setTikzDefaults <- function( overwrite = TRUE ){
       "\\setlength\\PreviewBorder{0pt}\n"
     ),
 
+    tikzXelatexPackages = c(
+      "\\usepackage{tikz}\n",
+      "\\usepackage[active,tightpage,xetex]{preview}\n",
+      "\\usepackage{fontspec,xunicode}\n",
+      "\\PreviewEnvironment{pgfpicture}\n",
+      "\\setlength\\PreviewBorder{0pt}\n"
+    ),
+
+    tikzFooter = "\\end{document}\n",
+
     tikzMetricPackages = c(
-      "\\usepackage[utf8]{inputenc}\n",
       # The fontenc package is very important here! 
       # R assumes the output device is uing T1 encoding.
       # LaTeX defaults to OT1. This package makes the
@@ -84,13 +125,26 @@ setTikzDefaults <- function( overwrite = TRUE ){
       "\\usepackage[T1]{fontenc}\n",
       "\\usetikzlibrary{calc}\n"
     ),
- 
-    tikzFooter = "\\end{document}\n",
+
+    tikzUnicodeMetricPackages = c(
+      # The fontenc package is very important here!
+      # R assumes the output device is uing T1 encoding.
+      # LaTeX defaults to OT1. This package makes the
+      # symbol codes consistant for both systems.
+      "\\usepackage[T1]{fontenc}\n",
+      "\\usetikzlibrary{calc}\n",
+      "\\usepackage{fontspec,xunicode}\n"
+    ),
+
  
     tikzSanitizeCharacters = c('%','$','}','{','^','_','#','&','~'), 
  
     tikzReplacementCharacters = c('\\%','\\$','\\}','\\{','\\^{}','\\_{}',
-      '\\#','\\&','\\char`\\~')
+      '\\#','\\&','\\char`\\~'),
+
+    tikzRasterResolution = 300,
+
+    tikzPdftexWarnUTF = TRUE
 
   )
 
@@ -114,5 +168,106 @@ setTikzDefaults <- function( overwrite = TRUE ){
 
   # Return a list of the options that were modified.
   invisible( tikzSetOptions )
+
+}
+
+isTikzDevice <- function(which = dev.cur()){
+  if (which == 1){ return(FALSE) }
+
+  dev_name <- names(dev.list()[which - 1])
+  return(dev_name == 'tikz output')
+}
+
+getTikzDeviceEngine <- function(dev_num = dev.cur()){
+  if (!isTikzDevice(dev_num)){
+    stop("The specified device is not a tikz device, please start a tikz device to use this function. See ?tikz.")
+  }
+
+  engine <- switch(
+    EXPR = as.character(.Call('TikZ_GetEngine', dev_num, PACKAGE = 'tikzDevice')),
+    '1' = 'pdftex',
+    '2' = 'xetex'
+  )
+
+  return( engine )
+}
+
+
+getDeviceInfo <- function(dev_num = dev.cur()) {
+  # This function recovers some information about a tikz() graphics device that
+  # is stored at the C level in the tikzDevDesc struct.
+  #
+  # Currently returns:
+  #
+  #  * The path to the TeX file that is being created.
+  if (!isTikzDevice(dev_num)){
+    stop("The specified device is not a tikz device!")
+  }
+
+  device_info <- .Call('TikZ_DeviceInfo', dev_num, PACKAGE = 'tikzDevice')
+
+  return(device_info)
+
+}
+
+tikz_writeRaster <-
+function(
+  fileName, rasterCount, rasterData, nrows, ncols,
+  finalDims, interpolate
+){
+
+  raster_file <- basename(tools::file_path_sans_ext(fileName))
+  raster_file <- file.path(dirname(fileName),
+    paste(raster_file, '_ras', rasterCount, '.png', sep = '')
+  )
+
+  # Convert the 4 vectors of RGBA data contained in rasterData to a raster
+  # image.
+  rasterData[['maxColorValue']] = 255
+  rasterData = do.call( grDevices::rgb, rasterData )
+  rasterData = as.raster(
+    matrix( rasterData, nrow = nrows, ncol = ncols, byrow = TRUE ) )
+
+  # Write the image to a PNG file.
+  savePar = par(no.readonly=TRUE); on.exit(par(savePar))
+
+  # On OS X there is a problem with png() not respecting antialiasing options.
+  # So, we have to use quartz instead.  Also, we cannot count on X11 or Cairo
+  # being compiled into OS X binaries.  Technically, cannot count on Aqua/Quartz
+  # either but you would have to be a special kind of special to leave it out.
+  # Using type='Xlib' also causes a segfault for me on OS X 10.6.4
+  if ( Sys.info()['sysname'] == 'Darwin' && capabilities('aqua') ){
+
+    quartz( file = raster_file, type = 'png',
+      width = finalDims$width, height = finalDims$height, antialias = FALSE,
+      dpi = getOption('tikzRasterResolution') )
+
+  } else if (Sys.info()['sysname'] == 'Windows') {
+
+    png( filename = raster_file, width = finalDims$width, height = finalDims$height,
+      units = 'in', res = getOption('tikzRasterResolution') )
+
+  } else {
+
+    # Linux/UNIX and OS X without Aqua.
+    png( filename = raster_file, width = finalDims$width, height = finalDims$height,
+      type = 'Xlib', units = 'in', antialias = 'none',
+      res = getOption('tikzRasterResolution') )
+
+  }
+
+  par( mar = c(0,0,0,0) )
+  plot.new()
+
+  plotArea = par('usr')
+
+  rasterImage(rasterData, plotArea[1], plotArea[3],
+    plotArea[2], plotArea[4], interpolate = interpolate )
+
+  dev.off()
+
+  return(
+    basename(tools::file_path_sans_ext(raster_file))
+  )
 
 }

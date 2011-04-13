@@ -1,17 +1,87 @@
+#' Obtain the Width of an Arbitrary LaTeX String
+#' This function calculates the width of a string as it would appear after
+#' being compiled by LaTeX.
+#'
+#' This function is used internally by the \code{tikz} device for proper string
+#' placement in graphics.  This function first checks to see if the width
+#' exists in a global or temporary string width dictionary (as define in
+#' \code{options('tikzMetricsDictionary')}) and if so will pull the width from
+#' there. If the dictionary does not exist then a temporary one for the current
+#' R session is created and the string width is calculated via a \code{system}
+#' call to latex. The calling of latex to calculate a string width is quit
+#' expensive and so we strongly recommend setting
+#' \code{options('tikzMetricsDictionary') <- /path/to/dictionary} to create a
+#' global dictionary.
+#'
+#' @param texString An arbitrary string for which the width is to be
+#'   calculated.  May contain LaTeX markup.
+#' @param cex a real number that specifies a scaling factor that is to be
+#'   applied to device output.
+#' @param face an integer in the range [1-5] that specifies the font face to
+#'   use. See \link{par} for details.
+#' @param engine a string specifying which TeX engine to use. Possible values
+#'   are 'pdftex' and 'xetex'. See the Unicode section of \link{tikzDevice} for
+#'   details.
+#'
+#'
+#' @return \item{width}{The width of \code{texString} in point size.}
+#'
+#' @note \pkg{\link{tikzDevice}} tries very hard when it is loaded to find a
+#'   working \command{latex} or \command{pdflatex} command.  If it is
+#'   successful the command is set in \code{options('tikzLatex')}, otherwise
+#'   this function will fail.
+#'
+#' @author Charlie Sharpsteen \email{source@@sharpsteen.net} and Cameron
+#'   Bracken \email{cameron.bracken@@gmail.com}
+#'
+#' @seealso \code{\link{tikz}}, \code{\link{getLatexCharMetrics}}
+#' @keywords character
+#'
+#' @examples
+#'
+#' 	getLatexStrWidth('{\\\\tiny Hello \\\\LaTeX!}')
+#'
+#' @export
 getLatexStrWidth <-
-function( texString, cex = 1, face= 1){
+function(texString, cex = 1, face= 1, engine = getOption('tikzDefaultEngine')){
+
+  switch(engine,
+    pdftex = {
+      if ( anyMultibyteUTF8Characters(texString) && getOption('tikzPdftexWarnUTF') ) {
+        warning(strwrap("Attempting to calculate the width of a Unicode string
+            using the pdftex engine. This may fail! See the Unicode section of
+            ?tikzDevice for more information."))
+      }
+      packages <- getOption("tikzLatexPackages")
+    },
+
+    xetex = {
+      if (is.null(getOption('tikzXelatex'))) {
+        stop(strwrap("Cannot find XeLaTeX! Please check your system
+            configuration or manually provide a value for
+            options(tikzXelatex)"))
+      }
+      packages <- getOption("tikzXelatexPackages")
+    },
+    {#ELSE
+      stop('Unsupported TeX engine: ', engine,
+        '\nAvailable choices are:\n',
+        '\tpdftex\n',
+        '\txetex\n')
+    }
+  )
 
 	# Create an object that contains the string and it's
 	# properties.
 	TeXMetrics <- list( type='string', scale=cex, face=face, value=texString,
 	 	documentDeclaration = getOption("tikzDocumentDeclaration"),
-		packages = getOption("tikzLatexPackages"))
-		
+		packages = packages, engine = engine)
+
 
 	# Check to see if we have a width stored in
 	# our dictionary for this string.
 	width <- queryMetricsDictionary( TeXMetrics )
-	
+
 	if( width > 0 ){
 
 		# Positive string width means there was a
@@ -24,38 +94,118 @@ function( texString, cex = 1, face= 1){
 		# Call LaTeX and get one.
 		width <- getMetricsFromLatex( TeXMetrics )
 
-		# Store the width in the dictionary so we don't
-		# have to do this again.
-		storeMetricsInDictionary( TeXMetrics, width )
+    if (is.null(width)) {
+      # Something went wrong. Return 0
+      return(0)
+    } else {
+      # Store the width in the dictionary so we don't
+      # have to do this again.
+      storeMetricsInDictionary( TeXMetrics, width )
 
-		# Return the width.
-		return( width )
+      # Return the width.
+      return( width )
+    }
 
 	}
 }
 
+
+#' Obtain LaTeX Font Metrics for Characters
+#' This function is used to retrieve the ascent, decent and width of a
+#' character glyph as it would appear in output typeset by LaTeX.
+#'
+#' \code{getLatexCharMetrics} first checks to see if metrics have allready been
+#' calculated for the given character using the given values of \code{cex} and
+#' \code{face}. If so, cached values are returned. If no cached values exists,
+#' the LaTeX compiler specified by \code{options( tikzLatex )} is invoked in
+#' order to calculate them.
+#'
+#' @param charCode an integer that corresponds to a symbol in the ASCII
+#'   character table under the Type 1 font encoding. All numeric values are
+#'   coerced using \code{as.integer}. Non-numeric values will not be accepted.
+#' @param cex a real number that specifies a scaling factor that is to be
+#'   applied to device output.
+#' @param face an integer in the range [1-5] that specifies the font face to
+#'   use. See \link{par} for details.
+#' @param engine a string specifying which TeX engine to use. Possible values
+#'   are 'pdftex' and 'xetex'. See the Unicode section of \link{tikzDevice} for
+#'   details.
+#'
+#'
+#' @return \item{metrics}{A numeric vector holding ascent, descent, width
+#'   character metrics. Values should all be nonnegative. }
+#'
+#' @note \code{\link{tikzDevice}} tries very hard when it is loaded to find a
+#'   working \command{latex} or \command{pdflatex} command.  If it is
+#'   successful the command is set in \code{options('tikzLatex')}, otherwise
+#'   this function will fail.
+#'
+#' @author Charlie Sharpsteen \email{source@@sharpsteen.net}
+#'
+#' @seealso \code{\link{tikz}}, \code{\link{getLatexStrWidth}}
+#' @references PGF Manual
+#'
+#' @keywords character
+#'
+#' @examples
+#'
+#' 	# Calculate ascent, descent and width for "A"
+#' 	getLatexCharMetrics(65)
+#'
+#' @export
 getLatexCharMetrics <-
-function( charCode, cex = 1, face = 1 ){
+function(charCode, cex = 1, face = 1, engine = getOption('tikzDefaultEngine')){
 
-	# This function is pretty much an exact duplicate of
-	# getLatexStrWidth, these two functions should be 
-	# generalized and combined.
+  # This function is pretty much an exact duplicate of getLatexStrWidth, these
+  # two functions should be generalized and combined.
+  switch(engine,
+    pdftex = {
+      packages <- getOption('tikzLatexPackages')
+    },
 
-	# We must be given a valid integer character code.
-	if( !(is.numeric(charCode) && charCode > 31 && charCode < 127 ) ){
-		warning("Sorry, this function currently only accepts numbers between 32 and 126!")
+    xetex = {
+      if (is.null(getOption('tikzXelatex'))) {
+        stop(strwrap("Cannot find XeLaTeX! Please check your system
+            configuration or manually provide a value for
+            options(tikzXelatex)"))
+      }
+      packages <- getOption('tikzXelatexPackages')
+    },
+    {#ELSE
+      stop('Unsupported TeX engine: ', engine,
+        '\nAvailable choices are:\n',
+        '\tpdftex\n',
+        '\txetex\n')
+    }
+  )
+
+	# We must be given an integer character code.
+  if ( !is.numeric(charCode) ) {
+    warning("getLatexCharMetrics only accepts integers!")
+		return(NULL)
+  }
+
+	if ( engine == 'pdftex' && !(charCode > 31 && charCode < 127 ) ) {
+    if (getOption('tikzPdftexWarnUTF')) {
+      warning(strwrap("pdftex can only generate metrics for character codes
+          between 32 and 126! See the Unicode section of ?tikzDevice for more
+          information."))
+    }
 		return(NULL)
 	}
 
 	# Coerce the charCode to integer in case someone was being funny
   # and passed a float.
+  #
+  # IMPORTANT: The charCode must be in UTF-8 encoding or else funny business
+  #            will likely occur.
 	charCode <- as.integer( charCode )
 
 	# Create an object that contains the character and it's
 	# properties.
 	TeXMetrics <- list( type='char', scale=cex, face=face, value=charCode,
 		documentDeclaration = getOption("tikzDocumentDeclaration"),
-		packages = getOption("tikzLatexPackages"))
+		packages = packages, engine = engine)
 
 	# Check to see if we have metrics stored in
 	# our dictionary for this character.
@@ -73,11 +223,16 @@ function( charCode, cex = 1, face = 1 ){
 		# Call LaTeX to obtain them.
 		metrics <- getMetricsFromLatex( TeXMetrics )
 
-		# Store the metrics in the dictionary so we don't
-		# have to do this again.
-		storeMetricsInDictionary( TeXMetrics, metrics )
+    if (is.null(metrics)) {
+      # Couldn't get metrics for some reason, return 0
+      return(c(0, 0, 0))
+    } else {
+      # Store the metrics in the dictionary so we don't
+      # have to do this again.
+      storeMetricsInDictionary( TeXMetrics, metrics )
 
-		return( metrics )
+      return( metrics )
+    }
 
 	}
 }
@@ -85,7 +240,7 @@ function( charCode, cex = 1, face = 1 ){
 getMetricsFromLatex <-
 function( TeXMetrics ){
 	
-	# Reimplementation of the origonal C function since
+	# Reimplementation of the original C function since
 	# the C function causes all kinds of gibberish to
 	# hit the screen when called under Windows and
 	# Linux. 
@@ -119,11 +274,19 @@ function( TeXMetrics ){
 	# Also, we load the user packages last so the user can override 
 	# things if they need to.
 	#
-	#The user MUST load the tikz package here
-	writeLines(getOption("tikzLatexPackages"), texIn)
-	
-	# Load important packages for calculating metrics
-	writeLines(getOption("tikzMetricPackages"), texIn)
+	# The user MUST load the tikz package here.
+	#
+	# Load important packages for calculating metrics, must use different
+	# packages for (multibyte) unicode characters.
+  writeLines(TeXMetrics$packages, texIn)
+  switch(TeXMetrics$engine,
+    pdftex = {
+      writeLines(getOption('tikzMetricPackages'), texIn)
+    },
+    xetex = {
+      writeLines(getOption('tikzUnicodeMetricPackages'), texIn)
+    }
+  )
 
 	writeLines("\\batchmode", texIn)
 
@@ -227,8 +390,11 @@ function( TeXMetrics ){
 	# Close the LaTeX file, ready to compile 
 	close( texIn )
 
-	# Recover the latex command.
-	latexCmd <- getOption('tikzLatex')
+	# Recover the latex command. Use XeLaTeX if the character is not ASCII
+	latexCmd <- switch(TeXMetrics$engine,
+    pdftex = getOption('tikzLatex'),
+    xetex  = getOption('tikzXelatex')
+  )
 
 	# Append the batchmode flag to increase LaTeX 
 	# efficiency.
@@ -237,15 +403,7 @@ function( TeXMetrics ){
 
   # avoid warnings about non-zero exit status, we know tex exited abnormally
   # it was designed that way for speed
-  w <- getOption('warn')
-  options(warn=-1)
-
-	# Run that shit.
-	silence <- system( latexCmd, intern=T, ignore.stderr=T)
-
-	# set the options back to normal
-	options(warn=w)
-
+	suppressWarnings(silence <- system( latexCmd, intern=T, ignore.stderr=T))
 
 	# Open the log file.
 	texOut <- file( texLog, 'r' )
@@ -253,6 +411,20 @@ function( TeXMetrics ){
 	# Read the contents of the log file.
 	logContents <- readLines( texOut )
 	close( texOut )
+
+  if (TeXMetrics$engine == 'xetex') {
+    # Check to see if XeLaTeX was unable to typeset any Unicode characters.
+    missing_glyphs <- logContents[grep('^\\s*Missing character: There is no',
+        logContents )]
+
+    if (length(missing_glyphs)) {
+      warning('XeLaTeX was unable to calculate metrics for some characters:\n',
+        paste('\t', missing_glyphs, collapse = '\n') )
+
+      # Bail out of the calculation
+      return(NULL)
+    }
+  }
 
 	# Recover width by finding the line containing
 	# tikzTeXWidth in the logfile.

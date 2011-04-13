@@ -1,6 +1,8 @@
-# Suck in all available symbols from filehash.
-import( filehash )
-
-# Export user functions
-export( 'tikz', 'getLatexStrWidth', 'getLatexCharMetrics', 'setTikzDefaults', 
-		'tikzAnnotate', 'tikzCoord', 'sanitizeTexString')
+export(anyMultibyteUTF8Characters)
+import(filehash)
+export(setTikzDefaults)
+export(getLatexStrWidth)
+export(getLatexCharMetrics)
+export(sanitizeTexString)
+export(tikz)
+export(tikzAnnotate, tikzCoord)
