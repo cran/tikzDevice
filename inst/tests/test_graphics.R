@@ -1,7 +1,11 @@
+# Switch to the detailed reporter implemented in helper_reporters.R
+testthat:::with_reporter(GraphicsReporter, {
+
 test_graphs <- list(
   list(
     short_name = 'hello_TeX',
     description = 'Draw a circle and some simple text',
+    tags = c('base', 'text'),
     graph_code = quote({
       plot(1, axes=F, xlab='', ylab='')
       text(1, 1.1, 'Hello TeX')
@@ -11,6 +15,7 @@ test_graphs <- list(
   list(
     short_name = 'graph_box',
     description = 'Draw a box around a graph',
+    tags = c('base'),
     graph_code = quote({
       plot(1, type='n', axes=F)
       box()
@@ -20,6 +25,7 @@ test_graphs <- list(
   list(
     short_name = 'text_color',
     description  = 'Draw colorized text',
+    tags = c('base', 'text'),
     graph_code = quote({
       plot(1, type='n')
       text(0.8,0.8,'red',col='red')
@@ -30,6 +36,7 @@ test_graphs <- list(
   list(
     short_name = 'plot_legend',
     description = 'Draw a legend box',
+    tags = c('base'),
     graph_code = quote({
       plot(1,1, xlim=c(0,10), ylim=c(0,10))
 
@@ -42,6 +49,7 @@ test_graphs <- list(
   list(
     short_name = 'pch_caracters',
     description = 'Draw common plotting characters',
+    tags = c('base'),
     graph_code = quote({
       # Magic stuff taken from example(points)
       n <- floor(sqrt(26))
@@ -70,6 +78,7 @@ test_graphs <- list(
   list(
     short_name = 'draw_circles',
     description = 'Draw circles',
+    tags = c('base'),
     graph_code = quote({
       plot(-2:2, -2:2, type = "n", axes=F, xlab='', ylab='')
       points(rnorm(10), rnorm(10), col = "red")
@@ -80,6 +89,7 @@ test_graphs <- list(
   list(
     short_name = 'draw_filled_circles',
     description = 'Draw filled circles',
+    tags = c('base'),
     graph_code = quote({
        plot(-2:2, -2:2, type = "n", axes=F, xlab='', ylab='')
        points(rnorm(10), rnorm(10), pch=21, col='blue', bg='forestgreen')
@@ -89,6 +99,7 @@ test_graphs <- list(
   list(
     short_name = 'line_color',
     description = 'Draw colored lines',
+    tags = c('base'),
     graph_code = quote({
       plot(c(0,1), c(0,1), type = "l", axes=F,
               xlab='', ylab='', col='red3')
@@ -98,6 +109,7 @@ test_graphs <- list(
   list(
     short_name = "character_expansion",
     description = "Test character expansion",
+    tags = c('base'),
     graph_code = quote({
        plot(1, axes=F, xlab='', ylab='', cex=10)
        points(1, cex=.5)
@@ -107,6 +119,7 @@ test_graphs <- list(
   list(
     short_name = 'filled_rectangle',
     description = 'Test filled rectangles',
+    tags = c('base'),
     graph_code = quote({
       plot(-2:2, -2:2, type = "n", axes=F, xlab='', ylab='')
       points(rnorm(10), rnorm(10), pch=22, col='red', bg='gold')
@@ -116,6 +129,7 @@ test_graphs <- list(
   list(
     short_name = 'line_types',
     description = 'Test line types',
+    tags = c('base'),
     graph_code = quote({
       plot(0, type='n', xlim=c(0,1), ylim=c(0,6),
               axes=F, xlab='', ylab='')
@@ -127,6 +141,7 @@ test_graphs <- list(
   list(
     short_name = 'line_weights',
     description = 'Test line weights',
+    tags = c('base'),
     graph_code = quote({
       plot(0, type='n', xlim=c(0,1), ylim=c(0,6),
               axes=F, xlab='', ylab='')
@@ -138,6 +153,7 @@ test_graphs <- list(
   list(
     short_name = 'transparency',
     description = 'Test transparency',
+    tags = c('base'),
     graph_code = quote({
       plot(-2:2, -2:2, type = "n", axes=F, xlab='', ylab='')
       points(rnorm(50), rnorm(50), pch=21, bg=rainbow(50,alpha=.5), cex=10)
@@ -147,6 +163,7 @@ test_graphs <- list(
   list(
     short_name = 'lots_of_elements',
     description = 'Test of many points for file size',
+    tags = c('base'),
     graph_code = quote({
       plot(-2:2, -2:2, type = "n", axes=F, xlab='', ylab='')
       points(rnorm(500), rnorm(500), pch=21, bg=rainbow(50,alpha=.5), cex=10)
@@ -156,6 +173,7 @@ test_graphs <- list(
   list(
     short_name = 'contour_lines',
     description = 'Test contour lines and associated text',
+    tags = c('base', 'text'),
     graph_code = quote({
       x <- -6:16
       op <- par(mfrow = c(2, 2))
@@ -172,6 +190,7 @@ test_graphs <- list(
   list(
     short_name = 'string_placement',
     description = 'Test string placement and TeX symbol generation',
+    tags = c('base', 'text'),
     graph_code = quote({
       syms <-c('alpha','theta','tau','beta','vartheta','pi','upsilon',
             'gamma','gamma','varpi','phi','delta','kappa','rho','varphi',
@@ -190,6 +209,7 @@ test_graphs <- list(
   list(
     short_name = 'text_alignment',
     description = 'Test text alignment',
+    tags = c('base', 'text'),
     graph_code = quote({
       plot(1,1,type='n',xlab='',ylab='',axes=F)
       abline(v=1)
@@ -211,6 +231,7 @@ test_graphs <- list(
   list(
     short_name = 'persp_3D',
     description = 'Test of 3D graphs with persp',
+    tags = c('base', '3D'),
     graph_code = quote({
       x <- seq( -1.95, 1.95, length=30 )
       y <- seq( -1.95, 1.95, length=35 )
@@ -234,8 +255,80 @@ test_graphs <- list(
   ),
 
   list(
+    short_name = 'base_annotation',
+    description = 'Annotation of base graphics',
+    tags = c('base', 'annotation'),
+    graph_options = list(
+      tikzLatexPackages = c(getOption('tikzLatexPackages'),
+        "\\usetikzlibrary{decorations.pathreplacing}",
+        "\\usetikzlibrary{positioning}",
+        "\\usetikzlibrary{shapes.arrows,shapes.symbols}"
+      )
+    ),
+    graph_code = quote({
+
+      p <- rgamma (300 ,1)
+      outliers <- which( p > quantile(p,.75)+1.5*IQR(p) )
+      boxplot(p)
+
+      # Add named coordinates that other TikZ commands can hook onto
+      tikzCoord(1, min(p[outliers]), 'min outlier')
+      tikzCoord(1, max(p[outliers]), 'max outlier')
+
+      # Use tikzAnnotate to insert arbitrary code, such as drawing a fancy path
+      # between min outlier and max outlier.
+      tikzAnnotate(c("\\draw[very thick,red,",
+        # Turn the path into a brace.
+        'decorate,decoration={brace,amplitude=12pt},',
+        # Shift it 1em to the left of the coordinates
+        'transform canvas={xshift=-1em}]',
+        '(min outlier) --',
+        # Add a node with some text in the middle of the path
+        'node[single arrow,anchor=tip,fill=white,draw=green,',
+        'left=14pt,text width=0.70in,align=center]',
+        '{Holy Outliers Batman!}', '(max outlier);'))
+
+      # tikzNode can be used to place nodes with customized options and content
+      tikzNode(
+        opts='starburst,fill=green,draw=blue,very thick,right=of max outlier',
+        content='Wow!'
+      )
+
+    })
+  ),
+
+  list(
+    short_name = 'grid_annotation',
+    description = 'Annotation of grid graphics',
+    tags = c('grid', 'annotation'),
+    graph_options = list(
+      tikzLatexPackages = c(getOption('tikzLatexPackages'),
+        "\\usetikzlibrary{shapes.callouts}"
+      )
+    ),
+    graph_code = quote({
+
+      require(grid)
+
+      pushViewport(plotViewport())
+      pushViewport(dataViewport(1:10, 1:10))
+
+      grid.rect()
+      grid.xaxis()
+      grid.yaxis()
+      grid.points(1:10, 1:10)
+
+      for ( i in seq(2,8,2) ){
+        grid.tikzNode(i,i,opts='ellipse callout,draw,anchor=pointer',content=i)
+      }
+
+    })
+  ),
+
+  list(
     short_name = 'ggplot2_test',
     description = 'Test of ggplot2 graphics',
+    tags = c('ggplot2'),
     graph_code = quote({
       sink(tempfile())
       suppressPackageStartupMessages(require(mgcv))
@@ -249,6 +342,7 @@ test_graphs <- list(
   list(
     short_name = 'ggplot2_superscripts',
     description = 'Test of grid text alignment with ggplot2',
+    tags = c('ggplot2', 'text'),
     graph_code =  quote({
       sink(tempfile())
       suppressPackageStartupMessages(require(ggplot2))
@@ -271,6 +365,7 @@ test_graphs <- list(
   list(
     short_name = 'polypath',
     description = 'Test polypath support',
+    tags = c('base', 'polypath'),
     graph_code = quote({
       # From example(polypath)
        plotPath <- function(x, y, col="grey", rule="winding") {
@@ -312,42 +407,45 @@ test_graphs <- list(
   ),
 
   list(
-   short_name = 'base_raster',
-   description = 'Test raster support in base graphics',
-   graph_code = quote({
+    short_name = 'base_raster',
+    description = 'Test raster support in base graphics',
+    tags = c('base', 'raster'),
+    graph_code = quote({
 
-     plot(c(100, 250), c(300, 450), type = "n", xlab="", ylab="")
-     image <- as.raster(matrix(rep(0:1,5*3), ncol=5, nrow=3))
-     rasterImage(image, 100, 300, 150, 350, interpolate=FALSE)
-     rasterImage(image, 100, 400, 150, 450)
-     rasterImage(image, 200, 300, 200 + xinch(.5), 300 + yinch(.3),
-              interpolate=FALSE)
-            rasterImage(image, 200, 400, 250, 450, angle=15,
-              interpolate=FALSE)
+      plot(c(100, 250), c(300, 450), type = "n", xlab="", ylab="")
+      image <- as.raster(matrix(rep(0:1,5*3), ncol=5, nrow=3))
+      rasterImage(image, 100, 300, 150, 350, interpolate=FALSE)
+      rasterImage(image, 100, 400, 150, 450)
+      rasterImage(image, 200, 300, 200 + xinch(.5), 300 + yinch(.3),
+               interpolate=FALSE)
+             rasterImage(image, 200, 400, 250, 450, angle=15,
+               interpolate=FALSE)
 
-   })
+    })
   ),
 
   list(
-   short_name = 'grid_raster',
-   description = 'Test raster support in grid graphics',
-   graph_code = quote({
+    short_name = 'grid_raster',
+    description = 'Test raster support in grid graphics',
+    tags = c('grid', 'raster'),
+    graph_code = quote({
 
-     suppressPackageStartupMessages(require(grid))
-     suppressPackageStartupMessages(require(lattice))
+      suppressPackageStartupMessages(require(grid))
+      suppressPackageStartupMessages(require(lattice))
 
-     plt <- levelplot(volcano, panel = panel.levelplot.raster,
-          col.regions = topo.colors, cuts = 30, interpolate = TRUE)
+      plt <- levelplot(volcano, panel = panel.levelplot.raster,
+           col.regions = topo.colors, cuts = 30, interpolate = TRUE)
 
-     print(plt)
+      print(plt)
 
-   })
+    })
   ),
 
   # New pdfLaTeX tests go here
   #list(
   #  short_name = 'something_suitable_as_a_filename',
   #  description = 'Longer description of what the test does',
+  #  tags = c('plot', 'tags'),
   #  graph_options = list(optional stuff to pass to options() during this test)
   #  graph_code = quote({
   #
@@ -358,6 +456,7 @@ test_graphs <- list(
   list(
     short_name = 'utf8_characters',
     description = 'Test of UTF8 characters',
+    tags = c('base', 'xetex', 'utf8'),
     uses_xetex = TRUE,
     graph_code =  quote({
       n <- 10
@@ -374,6 +473,7 @@ test_graphs <- list(
   list(
     short_name = 'xetex_variants',
     description = 'Test of XeLaTeX font variants',
+    tags = c('xetex', 'utf8'),
     uses_xetex = TRUE,
     # Only OS X is likely to have the required fonts installed
     skip_if = function(){Sys.info()['sysname'] != 'Darwin'},
@@ -439,6 +539,7 @@ test_graphs <- list(
   #list(
   #  short_name = 'something_suitable_as_a_filename',
   #  description = 'Longer description of what the test does',
+  #  tags = c('plot', 'tags'),
   #  uses_xetex = TRUE,
   #  graph_options = list(optional stuff to pass to options() during this test)
   #  graph_code = quote({
@@ -448,7 +549,15 @@ test_graphs <- list(
 
 )
 
-lapply(test_graphs, do.call, what = do_graphics_test)
+if ( length(tags_to_run) ) {
+  test_graphs <- Filter(
+    function(graph){ any(graph$tags %in% tags_to_run) },
+    test_graphs )
+}
+
+
+run_test <- function(graph){ do.call(do_graphics_test, graph) }
+graphs_produced <- Filter(run_test, test_graphs)
 
 context('Graph test cleanup')
 
@@ -458,7 +567,43 @@ test_that('All graphics devices closed',{
 
 })
 
-message('\n\nFinished generating TikZ test graphs.')
+testthat:::end_context() # Needs to be done manually due to reporter swap
+}) # End reporter swap
+
+
+message('\nFinished generating TikZ test graphs.')
 message('PDF files are in:\n\t', test_output_dir)
 message('\nTeX sources and log files are in:\n\t', test_work_dir)
+
+if ( !is.null(gs_cmd) ) {
+  # Combine all test PDFs into one big file for easy viewing
+  graph_files <- Map(function(graph) {
+    file.path(test_output_dir, str_c(graph$short_name, '.pdf'))
+    }, graphs_produced)
+  test_output <- file.path(test_output_dir, 'test_results.pdf')
+
+  silence <- system(paste(shQuote(gs_cmd), '-dNOPAUSE', '-sDEVICE=pdfwrite',
+    str_c('-sOUTPUTFILE=', test_output),
+    '-dBATCH', paste(shQuote(graph_files), collapse = ' ')),
+    intern = TRUE, ignore.stderr = TRUE)
+
+  message('\nAll test outputs combined into:\n\t', test_output)
+}
+
+
+if ( !is.null(compare_cmd) && !is.null(convert_cmd) ) {
+  # Combine all visual diffs into one big PDF file for easy viewing
+  graph_files <- Map(function(graph) {
+    file.path(test_work_dir, str_c(graph$short_name, '_diff.png'))
+    }, graphs_produced)
+  diff_output <- file.path(test_output_dir, 'test_diffs.pdf')
+
+  silence <- system(paste(shQuote(convert_cmd),
+    paste(shQuote(graph_files), collapse = ' '),
+    diff_output),
+    intern = TRUE, ignore.stderr = TRUE)
+
+  message('\nResults of all visual diffs combined into:\n\t', diff_output)
+
+}
 
