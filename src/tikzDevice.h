@@ -21,8 +21,8 @@
 #include <R_ext/GraphicsEngine.h>
 
 /* Check R Graphics Engine for minimum supported version */
-#if R_GE_version < 6
-#error "This version of the tikzDevice must be compiled against R 2.11.0 or newer!"
+#if R_GE_version < 8
+#error "This version of the tikzDevice must be compiled against R 2.12.0 or newer!"
 #endif
 
 /* Macro definitions */
@@ -35,8 +35,21 @@
  */
 typedef enum {
   pdftex = 1,
-  xetex = 2
+  xetex = 2,
+  luatex = 3
 } tikz_engine;
+
+typedef enum {
+  TIKZ_START_PAGE = 1,
+  TIKZ_NO_PAGE = 0,
+  TIKZ_FINISH_PAGE = -1
+} TikZ_PageState;
+
+typedef enum {
+  TIKZ_START_CLIP = 1,
+  TIKZ_NO_CLIP = 0,
+  TIKZ_FINISH_CLIP = -1
+} TikZ_ClipState;
 
 
 /*
@@ -49,24 +62,24 @@ typedef enum {
 typedef struct {
 	FILE *outputFile;
   char *outFileName;
+  char *originalFileName;
   tikz_engine engine;
   int rasterFileCount;
-	Rboolean firstPage;
+  int pageNum;
 	Rboolean debug;
 	Rboolean standAlone;
 	Rboolean bareBones;
-	Rboolean firstClip;
+  Rboolean onefile;
 	int oldFillColor;
 	int oldDrawColor;
-	int oldLineType;
-	pGEcontext plotParams;
 	int stringWidthCalls;
 	const char *documentDeclaration;
 	const char *packages;
 	const char *footer;
-	Rboolean polyLine;
 	Rboolean console;
 	Rboolean sanitize;
+  TikZ_ClipState clipState;
+  TikZ_PageState pageState;
 } tikzDevDesc;
 
 
@@ -81,7 +94,7 @@ SEXP TikZ_DeviceInfo(SEXP device_num);
 static Rboolean TikZ_Setup(
 		pDevDesc deviceInfo,
 		const char *fileName,
-		double width, double height,
+		double width, double height, Rboolean onefile,
 		const char *bg, const char *fg, double baseSize,
 		Rboolean standAlone, Rboolean bareBones,
 		const char *documentDeclaration,
@@ -119,19 +132,11 @@ static void TikZ_Polyline( int n, double *x, double *y,
 		pGEcontext plotParams, pDevDesc deviceInfo );
 static void TikZ_Polygon( int n, double *x, double *y,
 		pGEcontext plotParams, pDevDesc deviceInfo );
-/*
- * Path routine, a polygon with "holes", was added in R 2.12.0,
- * Graphics Engine version 8.  No idea what happened to version 7,
- * guess it was internal
-*/
-#if R_GE_version >= 8
 static void
 TikZ_Path( double *x, double *y,
   int npoly, int *nper,
   Rboolean winding,
-  const pGEcontext plotParams, pDevDesc deviceInfo
-);
-#endif
+  const pGEcontext plotParams, pDevDesc deviceInfo );
 
 static void TikZ_Raster(
   unsigned int *raster,
@@ -155,24 +160,39 @@ static void TikZ_Mode( int mode, pDevDesc deviceInfo );
 
 
 /*Internal style definition routines*/
-static void StyleDef(Rboolean defineColor, const pGEcontext plotParams, 
-	pDevDesc deviceInfo);
-static void SetColor(int color, Rboolean def, tikzDevDesc *tikzInfo);
-static void SetFill(int color, Rboolean def, tikzDevDesc *tikzInfo);
-static void SetAlpha(int color, Rboolean fill, tikzDevDesc *tikzInfo);
-static void SetLineStyle(int lty, double lwd, tikzDevDesc *tikzInfo);
-static void SetDashPattern(int lty, tikzDevDesc *tikzInfo);
-static void SetLineWeight(double lwd, tikzDevDesc *tikzInfo);
-static void SetLineJoin(R_GE_linejoin ljoin, double lmitre, tikzDevDesc *tikzInfo);
-static void SetLineEnd(R_GE_lineend lend, tikzDevDesc *tikzInfo);
-static void SetMitreLimit(double lmitre, tikzDevDesc *tikzInfo);
+
+/*
+ * This enumeration specifies the kinds of drawing operations that need to be
+ * performed, such as filling or drawing a path.
+ *
+ * When adding new members, use the next power of 2 as so that the presence or
+ * absance of an operation can be determined using bitwise operators.
+ */
+typedef enum {
+  DRAWOP_NOOP = 0,
+  DRAWOP_DRAW = 1,
+  DRAWOP_FILL = 2
+} TikZ_DrawOps;
+static TikZ_DrawOps TikZ_GetDrawOps(pGEcontext plotParams);
+
+static void TikZ_DefineColors(const pGEcontext plotParams, pDevDesc deviceInfo, TikZ_DrawOps ops);
+static void TikZ_WriteDrawOptions(const pGEcontext plotParams, pDevDesc deviceInfo, TikZ_DrawOps ops);
+static void TikZ_WriteLineStyle(pGEcontext plotParams, tikzDevDesc *tikzInfo);
+
 static double ScaleFont( const pGEcontext plotParams, pDevDesc deviceInfo );
 
 /* Utility Routines*/
 static void printOutput(tikzDevDesc *tikzInfo, const char *format, ...);
 static void Print_TikZ_Header( tikzDevDesc *tikzInfo );
 static char *Sanitize(const char *str);
+#if 0
 static Rboolean contains_multibyte_chars(const char *str);
+#endif
 static double dim2dev( double length );
+static void TikZ_CheckState(pDevDesc deviceInfo);
+static char *calloc_strcpy(const char *str);
+static char *calloc_x_strcpy(const char *str, size_t extra);
+static char *calloc_x_strlen(const char *str, size_t extra);
+static void const_free(const void *ptr);
 
 #endif // End of Once Only header
