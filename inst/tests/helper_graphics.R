@@ -1,8 +1,12 @@
 # This file contains functions that help set up and run the tikzDevice through
 # test graphs.
 
+# Workaround until testthat 0.7.2 is on CRAN; see also hadley/testthat#102
+get_reporter <- if (exists("get_reporter", envir = asNamespace("testthat")))
+  testthat:::get_reporter else testthat:::test_reporter
+
 do_graphics_test <- function(short_name, description, graph_code,
-  uses_xetex = FALSE, graph_options = NULL, skip_if = NULL, ...) {
+  engine = 'pdftex', graph_options = NULL, skip_if = NULL, tags = NULL, ...) {
 
   context(description)
 
@@ -38,7 +42,7 @@ do_graphics_test <- function(short_name, description, graph_code,
     set.seed(4) # As specified by RFC 1149.5 ;)
 
     expect_that(
-      create_graph(graph_code, graph_file, uses_xetex),
+      create_graph(graph_code, graph_file, engine),
       runs_cleanly()
     )
 
@@ -46,7 +50,7 @@ do_graphics_test <- function(short_name, description, graph_code,
 
   test_that('Graph compiles cleanly',{
 
-    expect_that(graph_created <<- compile_graph(graph_file, uses_xetex), runs_cleanly())
+    expect_that(graph_created <<- compile_graph(graph_file, engine), runs_cleanly())
 
   })
 
@@ -58,7 +62,7 @@ do_graphics_test <- function(short_name, description, graph_code,
     # This test always "passes" as the real result is the number of pixels that
     # were found to be different between the test graph and the standard graph.
     # Such a result must be interpreted by a human.
-    expect_that(compare_graph(short_name), is_true())
+    expect_that(compare_graph(short_name, tags), is_true())
 
   })
 
@@ -67,9 +71,7 @@ do_graphics_test <- function(short_name, description, graph_code,
 
 }
 
-create_graph <- function(graph_code, graph_file, uses_xetex){
-
-    engine = ifelse(uses_xetex, 'xetex', 'pdftex')
+create_graph <- function(graph_code, graph_file, engine){
 
     tikz(file = graph_file, standAlone = TRUE, engine = engine)
     on.exit(dev.off())
@@ -80,13 +82,18 @@ create_graph <- function(graph_code, graph_file, uses_xetex){
 
 }
 
-compile_graph <- function(graph_file, uses_xetex){
+compile_graph <- function(graph_file, engine){
   # Have to compile in the same directory as the .tex file so that things like
   # raster images can be found.
   oldwd <- getwd()
   setwd(test_work_dir); on.exit(setwd(oldwd))
 
-  tex_cmd <- ifelse(uses_xetex, getOption('tikzXelatex'), getOption('tikzLatex'))
+  tex_cmd <- switch(engine,
+    pdftex = getOption('tikzLatex'),
+    xetex = getOption('tikzXelatex'),
+    luatex = getOption('tikzLualatex')
+  )
+
   silence <- system(paste(shQuote(tex_cmd), '-interaction=batchmode',
     '-output-directory', test_work_dir,
     graph_file ), intern = TRUE)
@@ -103,18 +110,25 @@ compile_graph <- function(graph_file, uses_xetex){
 
 }
 
-compare_graph <- function(graph_name){
+compare_graph <- function(graph_name, tags){
 
   if ( is.null(compare_cmd) ) {
-    testthat:::test_reporter()$vis_result('SKIP')
+    get_reporter()$vis_result('SKIP')
     return(TRUE)
   }
 
   test_output <- file.path(test_output_dir, str_c(graph_name, '.pdf'))
-  standard_graph <- file.path(test_standard_dir, str_c(graph_name, '.pdf'))
+  if( 'ggplot2' %in% tags && exists('scale_y_probit') ) {
+    # We are using a version of ggplot2 that predates 0.9.
+    #
+    # FIXME: Remove this once we drop support for 2.13.x.
+    standard_graph <- file.path(test_standard_dir, 'ggplot_old', str_c(graph_name, '.pdf'))
+  } else {
+    standard_graph <- file.path(test_standard_dir, str_c(graph_name, '.pdf'))
+  }
 
   if ( !file.exists(test_output) || !file.exists(standard_graph) ) {
-    testthat:::test_reporter()$vis_result('SKIP')
+    get_reporter()$vis_result('SKIP')
     return(TRUE)
   }
 
@@ -127,12 +141,13 @@ compare_graph <- function(graph_name){
     "2>&1 | awk '{metric=$NF};END{print metric}'"
   )
 
+  get_reporter()$set_cmp_command(command_line)
   result <- as.double(system(paste(
     # Force the command to be executed through bash
     'bash -c ', shQuote(command_line)),
     intern = TRUE, ignore.stderr = TRUE))
 
-  testthat:::test_reporter()$vis_result(result)
+  get_reporter()$vis_result(result)
 
   return(TRUE)
 

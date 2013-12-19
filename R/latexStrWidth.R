@@ -1,14 +1,15 @@
-#' Obtain the Width of an Arbitrary LaTeX String
-#' This function calculates the width of a string as it would appear after
-#' being compiled by LaTeX.
+#' Obtain Font Metrics from LaTeX
 #'
-#' This function is used internally by the \code{tikz} device for proper string
-#' placement in graphics.  This function first checks to see if the width
-#' exists in a global or temporary string width dictionary (as define in
-#' \code{options('tikzMetricsDictionary')}) and if so will pull the width from
-#' there. If the dictionary does not exist then a temporary one for the current
-#' R session is created and the string width is calculated via a \code{system}
-#' call to latex. The calling of latex to calculate a string width is quit
+#' These functions calculate the width of a character or string as it would
+#' appear after being compiled by LaTeX.
+#'
+#' These functions are used internally by the \code{tikz} device for proper
+#' string placement in graphics.  Both functions check to see if metrics exist
+#' in a global or temporary dictionary (as defined in
+#' \code{options('tikzMetricsDictionary')}) and if so will pull the metrics
+#' from there. If the dictionary does not exist, then a temporary one is
+#' created for the current R session. Metrics are calculated via \code{system}
+#' calls to LaTeX compilers. Querying compilers to calculate metrics is
 #' expensive and so we strongly recommend setting
 #' \code{options('tikzMetricsDictionary') <- /path/to/dictionary} to create a
 #' global dictionary.
@@ -20,30 +21,35 @@
 #' @param face an integer in the range [1-5] that specifies the font face to
 #'   use. See \link{par} for details.
 #' @param engine a string specifying which TeX engine to use. Possible values
-#'   are 'pdftex' and 'xetex'. See the Unicode section of \link{tikzDevice} for
+#'   are 'pdftex', 'xetex' and 'luatex'. See the Unicode section of \link{tikzDevice} for
 #'   details.
+#' @param documentDeclaration See the sections ``Options That Affect Package
+#'   Behavior'' and ``Font Size Calculations'' of \link{tikzDevice-package}
+#'   for more details.
+#' @param packages See the section ``Options That Affect Package Behavior'' of
+#'   \link{tikzDevice-package}.
 #'
 #'
-#' @return \item{width}{The width of \code{texString} in point size.}
-#'
-#' @note \pkg{\link{tikzDevice}} tries very hard when it is loaded to find a
-#'   working \command{latex} or \command{pdflatex} command.  If it is
-#'   successful the command is set in \code{options('tikzLatex')}, otherwise
-#'   this function will fail.
+#' @return
+#'   \item{getLatexStrWidth}{The width of \code{texString} in points.}
+#'   \item{getLatexCharMetrics}{A numeric vector holding ascent, descent
+#'     and width. Values should all be nonnegative.}
 #'
 #' @author Charlie Sharpsteen \email{source@@sharpsteen.net} and Cameron
 #'   Bracken \email{cameron.bracken@@gmail.com}
 #'
-#' @seealso \code{\link{tikz}}, \code{\link{getLatexCharMetrics}}
-#' @keywords character
+#' @keywords string character metrics
 #'
 #' @examples
 #'
-#' 	getLatexStrWidth('{\\\\tiny Hello \\\\LaTeX!}')
+#' 	 getLatexStrWidth('{\\\\tiny Hello \\\\LaTeX!}')
 #'
+#' @references PGF Manual
 #' @export
 getLatexStrWidth <-
-function(texString, cex = 1, face= 1, engine = getOption('tikzDefaultEngine')){
+function(texString, cex = 1, face= 1, engine = getOption('tikzDefaultEngine'),
+   documentDeclaration = getOption("tikzDocumentDeclaration"), packages)
+{
 
   switch(engine,
     pdftex = {
@@ -52,7 +58,7 @@ function(texString, cex = 1, face= 1, engine = getOption('tikzDefaultEngine')){
             "using the pdftex engine. This may fail! See the Unicode",
             "section of ?tikzDevice for more information.")
       }
-      packages <- getOption("tikzLatexPackages")
+      if (missing(packages)) {packages <- getOption('tikzLatexPackages')}
     },
 
     xetex = {
@@ -61,20 +67,31 @@ function(texString, cex = 1, face= 1, engine = getOption('tikzDefaultEngine')){
             "configuration or manually provide a value for",
             "options(tikzXelatex)")
       }
-      packages <- getOption("tikzXelatexPackages")
+      if (missing(packages)) {packages <- getOption('tikzXelatexPackages')}
     },
+
+    luatex = {
+      if (is.null(getOption('tikzLualatex'))) {
+        stop("Cannot find LuaLaTeX! Please check your system",
+            "configuration or manually provide a value for",
+            "options(tikzLualatex)")
+      }
+      if (missing(packages)) {packages <- getOption('tikzLualatexPackages')}
+    },
+
     {#ELSE
       stop('Unsupported TeX engine: ', engine,
         '\nAvailable choices are:\n',
         '\tpdftex\n',
-        '\txetex\n')
+        '\txetex\n',
+        '\tluatex\n')
     }
   )
 
 	# Create an object that contains the string and it's
 	# properties.
 	TeXMetrics <- list( type='string', scale=cex, face=face, value=texString,
-	 	documentDeclaration = getOption("tikzDocumentDeclaration"),
+    documentDeclaration = documentDeclaration,
 		packages = packages, engine = engine)
 
 
@@ -110,57 +127,28 @@ function(texString, cex = 1, face= 1, engine = getOption('tikzDefaultEngine')){
 }
 
 
-#' Obtain LaTeX Font Metrics for Characters
-#' This function is used to retrieve the ascent, decent and width of a
-#' character glyph as it would appear in output typeset by LaTeX.
-#'
-#' \code{getLatexCharMetrics} first checks to see if metrics have allready been
-#' calculated for the given character using the given values of \code{cex} and
-#' \code{face}. If so, cached values are returned. If no cached values exists,
-#' the LaTeX compiler specified by \code{options( tikzLatex )} is invoked in
-#' order to calculate them.
+#' @rdname getLatexStrWidth
 #'
 #' @param charCode an integer that corresponds to a symbol in the ASCII
 #'   character table under the Type 1 font encoding. All numeric values are
 #'   coerced using \code{as.integer}. Non-numeric values will not be accepted.
-#' @param cex a real number that specifies a scaling factor that is to be
-#'   applied to device output.
-#' @param face an integer in the range [1-5] that specifies the font face to
-#'   use. See \link{par} for details.
-#' @param engine a string specifying which TeX engine to use. Possible values
-#'   are 'pdftex' and 'xetex'. See the Unicode section of \link{tikzDevice} for
-#'   details.
-#'
-#'
-#' @return \item{metrics}{A numeric vector holding ascent, descent, width
-#'   character metrics. Values should all be nonnegative. }
-#'
-#' @note \code{\link{tikzDevice}} tries very hard when it is loaded to find a
-#'   working \command{latex} or \command{pdflatex} command.  If it is
-#'   successful the command is set in \code{options('tikzLatex')}, otherwise
-#'   this function will fail.
-#'
-#' @author Charlie Sharpsteen \email{source@@sharpsteen.net}
-#'
-#' @seealso \code{\link{tikz}}, \code{\link{getLatexStrWidth}}
-#' @references PGF Manual
-#'
-#' @keywords character
 #'
 #' @examples
 #'
-#' 	# Calculate ascent, descent and width for "A"
-#' 	getLatexCharMetrics(65)
+#'   # Calculate ascent, descent and width for "A"
+#'   getLatexCharMetrics(65)
 #'
 #' @export
 getLatexCharMetrics <-
-function(charCode, cex = 1, face = 1, engine = getOption('tikzDefaultEngine')){
+function(charCode, cex = 1, face = 1, engine = getOption('tikzDefaultEngine'),
+  documentDeclaration = getOption("tikzDocumentDeclaration"), packages)
+{
 
   # This function is pretty much an exact duplicate of getLatexStrWidth, these
   # two functions should be generalized and combined.
   switch(engine,
     pdftex = {
-      packages <- getOption('tikzLatexPackages')
+      if (missing(packages)) {packages <- getOption('tikzLatexPackages')}
     },
 
     xetex = {
@@ -169,13 +157,24 @@ function(charCode, cex = 1, face = 1, engine = getOption('tikzDefaultEngine')){
             "configuration or manually provide a value for",
             "options(tikzXelatex)")
       }
-      packages <- getOption('tikzXelatexPackages')
+      if (missing(packages)) {packages <- getOption('tikzXelatexPackages')}
     },
+
+    luatex = {
+      if (is.null(getOption('tikzLualatex'))) {
+        stop("Cannot find LuaLaTeX! Please check your system",
+            "configuration or manually provide a value for",
+            "options(tikzLualatex)")
+      }
+      if (missing(packages)) {packages <- getOption('tikzLualatexPackages')}
+    },
+
     {#ELSE
       stop('Unsupported TeX engine: ', engine,
         '\nAvailable choices are:\n',
         '\tpdftex\n',
-        '\txetex\n')
+        '\txetex\n',
+        '\tluatex\n')
     }
   )
 
@@ -204,7 +203,7 @@ function(charCode, cex = 1, face = 1, engine = getOption('tikzDefaultEngine')){
 	# Create an object that contains the character and it's
 	# properties.
 	TeXMetrics <- list( type='char', scale=cex, face=face, value=charCode,
-		documentDeclaration = getOption("tikzDocumentDeclaration"),
+		documentDeclaration = documentDeclaration,
 		packages = packages, engine = engine)
 
 	# Check to see if we have metrics stored in
@@ -284,6 +283,9 @@ function( TeXMetrics ){
       writeLines(getOption('tikzMetricPackages'), texIn)
     },
     xetex = {
+      writeLines(getOption('tikzUnicodeMetricPackages'), texIn)
+    },
+    luatex = {
       writeLines(getOption('tikzUnicodeMetricPackages'), texIn)
     }
   )
@@ -393,7 +395,8 @@ function( TeXMetrics ){
 	# Recover the latex command. Use XeLaTeX if the character is not ASCII
 	latexCmd <- switch(TeXMetrics$engine,
     pdftex = getOption('tikzLatex'),
-    xetex  = getOption('tikzXelatex')
+    xetex  = getOption('tikzXelatex'),
+    luatex  = getOption('tikzLualatex'),
   )
 
 	# Append the batchmode flag to increase LaTeX 

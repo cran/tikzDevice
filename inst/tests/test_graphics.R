@@ -1,5 +1,5 @@
 # Switch to the detailed reporter implemented in helper_reporters.R
-testthat:::with_reporter(GraphicsReporter, {
+testthat:::with_reporter(GraphicsReporter$new(), {
 
 test_graphs <- list(
   list(
@@ -29,7 +29,7 @@ test_graphs <- list(
     graph_code = quote({
       plot(1, type='n')
       text(0.8,0.8,'red',col='red')
-      text(1.2,1.2,'blue',col='blue',cex=2)
+      text(1.2,1.2,'blue',col=rgb(0,0,1,0.5),cex=2)
     })
   ),
 
@@ -355,8 +355,23 @@ test_graphs <- list(
         .Names = c("Grain Diameter", "Percent Finer"), row.names = c(NA, 9L),
         class = "data.frame")
 
-      testPlot <- qplot( `Grain Diameter`, `Percent Finer`, data = soilSample) +
-        scale_x_log10() + scale_y_probit() + theme_bw()
+      # R 2.12.x and 2.13.x have to test with ggplot2 v0.8.9 which is very
+      # different from 0.9.0.
+      #
+      # FIXME: Remove this once we drop support for 2.13.x
+      if( exists('scale_y_probit') ){
+        # We are using a ggplot2 version that is earlier than 0.9.0
+        testPlot <- qplot( `Grain Diameter`, `Percent Finer`, data = soilSample) +
+          scale_x_log10() + scale_y_probit() + theme_bw()
+      } else {
+        sink(tempfile())
+        suppressPackageStartupMessages(require(scales))
+        sink()
+        testPlot <- qplot(log10(`Grain Diameter`), `Percent Finer`, data = soilSample) +
+          scale_x_continuous(labels = math_format(10^.x)) +
+          scale_y_continuous(trans = 'probit', breaks = seq(0.2, 0.8, 0.2)) +
+          theme_bw()
+      }
 
       print( testPlot )
     })
@@ -425,6 +440,21 @@ test_graphs <- list(
   ),
 
   list(
+    short_name = 'raster_reflection',
+    description = 'Test raster handling in graphics with reflected axes',
+    tags = c('base', 'raster'),
+    graph_code = quote({
+
+      par(mfrow = c(2,2))
+      image(volcano, useRaster = TRUE)
+      image(volcano, xlim = c(1,0), useRaster = TRUE)
+      image(volcano, ylim = c(1,0), useRaster = TRUE)
+      image(volcano, xlim = c(1,0), ylim = c(1,0), useRaster = TRUE)
+
+    })
+  ),
+
+  list(
     short_name = 'grid_raster',
     description = 'Test raster support in grid graphics',
     tags = c('grid', 'raster'),
@@ -457,15 +487,13 @@ test_graphs <- list(
     short_name = 'utf8_characters',
     description = 'Test of UTF8 characters',
     tags = c('base', 'xetex', 'utf8'),
-    uses_xetex = TRUE,
+    engine = 'xetex',
     graph_code =  quote({
-      n <- 10
-      chars <- matrix(intToUtf8(seq(161,,1,10*n),multiple=T),n)
+      n <- 8
+      chars <- intToUtf8(seq(187,,1,n*n),multiple=T)
 
       plot(1:n,type='n',xlab='',ylab='',axes=FALSE, main="UTF-8 Characters")
-        for(i in 1:n)
-          for(j in 1:n)
-            text(i,j,chars[i,j])
+      text(rep(1:n, n), rep(1:n, rep(n, n)), chars)
     })
   ),
 
@@ -474,7 +502,7 @@ test_graphs <- list(
     short_name = 'xetex_variants',
     description = 'Test of XeLaTeX font variants',
     tags = c('xetex', 'utf8'),
-    uses_xetex = TRUE,
+    engine = 'xetex',
     # Only OS X is likely to have the required fonts installed
     skip_if = function(){Sys.info()['sysname'] != 'Darwin'},
     graph_options = list(
@@ -532,10 +560,27 @@ test_graphs <- list(
       for(i in 1:length(label))
         text(i,i,label[i])
     })
+  ),
+
+  ### LuaLaTeX Tests
+  list(
+    short_name = 'luatex_utf8_characters',
+    description = 'Test of UTF8 characters w/ LuaTeX',
+    tags = c('base', 'luatex', 'utf8'),
+    engine = 'luatex',
+    # Travis CI runs Ubuntu Precise with a fontspec package that doesn't accept
+    # LuaLaTeX yet
+    skip_if = function(){ Sys.getenv("TRAVIS") != "" },
+    graph_code =  quote({
+      n <- 8
+      chars <- intToUtf8(seq(187,,1,n*n),multiple=T)
+      
+      plot(1:n,type='n',xlab='',ylab='',axes=FALSE, main="UTF-8 Characters")
+      text(rep(1:n, n), rep(1:n, rep(n, n)), chars)
+    })
   )
 
-
-  # New UTF8/XeLaTeX tests go here
+  # New UTF8/XeLaTeX/LuaLatex tests go here
   #list(
   #  short_name = 'something_suitable_as_a_filename',
   #  description = 'Longer description of what the test does',
