@@ -1,20 +1,44 @@
-### R code from vignette source 'tikzDevice.Rnw'
-
-###################################################
-### code chunk number 1: setup
-###################################################
-	require(tikzDevice)
+## ----setup,echo=FALSE,results='hide'-------------------------------------
+  library(tikzDevice)
   if( !file.exists('figs') ){dir.create( 'figs' )}
-
-  # So that prompts and continuation prompts don't show up in the output.
-  options(prompt = ' ', continue = ' ')
 
   options(tikzMetricsDictionary='.tikzMetrics')
 
+  knitr::opts_chunk$set(
+    echo=FALSE,
+    fig.path='figs/fig',
+    message=FALSE,
+    width = 100,
+    comment = NA
+  )
+  knitr::knit_hooks$set(
+    source = function(x, options) {
+      paste("\\vspace{-1ex}",
+            "\\begin{tikzCodeBlock}[listing style=sweavechunk]",
+            paste(x, collapse = '\n'),
+            "\\end{tikzCodeBlock}\n\n", sep = '\n')
+    },
+    output = function(x, options) {
+      paste("\\vspace{-2ex}",
+            "\\begin{Verbatim}[frame=single]",
+            sub("\n+$", "", paste(x, collapse = '\n')),
+            "\\end{Verbatim}",
+            "",
+            sep = '\n')
+    },
+    warning = function(x, options) {
+      paste("\\vspace{-2ex}",
+            "\\begin{Verbatim}[frame=single,formatcom=\\color{warningcolor}]",
+            sub("\n+$", "", paste(strwrap(x, width = options$width),
+                                  collapse = '\n')),
+            "\\end{Verbatim}",
+            "",
+            sep = '\n')
+    },
+    chunk = function(x, options) x
+  )
 
-###################################################
-### code chunk number 2: tikzTitlePlot
-###################################################
+## ----tikzTitlePlot,results='hide'----------------------------------------
   tikz('figs/titlePlot.tex',width=4,height=4)
 
   x <- seq(-4.5,4.5,length.out=100)
@@ -35,36 +59,33 @@
 
   dev.off()
 
-
-###################################################
-### code chunk number 3: pdf-example
-###################################################
+## ----pdf-example,echo=FALSE,results='hide'-------------------------------
   pdf('figs/pdf-example.pdf', width = 3.25, height = 3.25)
   plot(1, 1, main = 'Hello!', ps = 10)
   dev.off()
 
-
-###################################################
-### code chunk number 4: tikz-example
-###################################################
+## ----tikz-example,echo=FALSE,results='hide'------------------------------
   tikz('figs/tikz-example.tex', width = 3.25, height = 3.25)
   plot(1, 1, main = 'Hello \\TeX !')
   dev.off()
 
+## ----tikzArgs, code=formatR::usage(tikz), eval=FALSE---------------------
+#  tikz(file = ifelse(onefile, "./Rplots.tex", "./Rplot%03d.tex"), width = 7, height = 7, 
+#      onefile = TRUE, bg = "transparent", fg = "black", pointsize = 10, lwdUnit = getOption("tikzLwdUnit"), 
+#      standAlone = FALSE, bareBones = FALSE, console = FALSE, sanitize = FALSE, 
+#      engine = getOption("tikzDefaultEngine"), documentDeclaration = getOption("tikzDocumentDeclaration"), 
+#      packages, footer = getOption("tikzFooter"), symbolicColors = getOption("tikzSymbolicColors"), 
+#      colorFileName = "%s_colors.tex", maxSymbolicColors = getOption("tikzMaxSymbolicColors"), 
+#      timestamp = TRUE)
 
-###################################################
-### code chunk number 5: simpleEx
-###################################################
-require(tikzDevice)
+## ----simpleEx,echo=TRUE,results='hide'-----------------------------------
+library(tikzDevice)
 tikz('figs/simpleEx.tex',width=3.5,height=3.5)
 plot(1,main='Hello World!')
 dev.off()
 
-
-###################################################
-### code chunk number 6: latexEx
-###################################################
-require(tikzDevice)
+## ----latexEx,echo=TRUE,results='hide',tidy=FALSE-------------------------
+library(tikzDevice)
 tikz('figs/latexEx.tex',
   width=3.5,height=3.5)
 
@@ -89,12 +110,9 @@ legend('bottomright', legend =
 
 dev.off()
 
-
-###################################################
-### code chunk number 7: bareBonesExample
-###################################################
-require(tikzDevice)
-require(maps)
+## ----bareBonesExample,echo=TRUE,results='hide',tidy=FALSE----------------
+library(tikzDevice)
+library(maps)
 
 tikz('figs/westCoast.tex', bareBones=TRUE)
 
@@ -111,109 +129,97 @@ tikzCoord(-122.419, 37.775, 'sfBay')
 
 dev.off()
 
-
-###################################################
-### code chunk number 8: standAloneExample
-###################################################
-require(tikzDevice)
+## ----standAloneExample,echo=TRUE,results='hide',tidy=FALSE---------------
+library(tikzDevice)
 tikz('standAloneExample.tex',standAlone=TRUE)
 plot(sin,-pi,2*pi,main="A Stand Alone TikZ Plot")
 dev.off()
 
+## ----standAloneCompileExample, results='hide', eval=FALSE----------------
+#  
+#    library(tools)
+#  
+#    catch <- system(paste(Sys.which('pdflatex'),
+#      '-interaction=batchmode -output-directory figs/ figs/standAloneExample.tex'),
+#      ignore.stderr=T)
+#  
+#    # If compiling the example failed, we don't want to include a broken link.
+#    if( catch == 0 ){
+#      pdfLink <- "The file \\\\code{standAloneExample.tex} may then be compiled to produce
+#        \\\\href{./figs/standAloneExample.pdf}{standAloneExample.pdf}. "
+#    }else{
+#      pdfLink <- ""
+#    }
+#      #%\Sexpr{print(pdfLink)}
 
-###################################################
-### code chunk number 9: standAloneCompileExample (eval = FALSE)
-###################################################
-## 
-## 	require(tools)
-## 
-## 	catch <- system(paste(Sys.which('pdflatex'),
-## 		'-interaction=batchmode -output-directory figs/ figs/standAloneExample.tex'),
-## 		ignore.stderr=T)
-## 
-## 	# If compiling the example failed, we don't want to include a broken link.
-## 	if( catch == 0 ){
-## 		pdfLink <- "The file \\\\code{standAloneExample.tex} may then be compiled to produce
-## 			\\\\href{./figs/standAloneExample.pdf}{standAloneExample.pdf}. "
-## 	}else{
-## 		pdfLink <- ""
-## 	}
-##     #%\Sexpr{print(pdfLink)}
+## ----xelatexFontVariantExample,tidy=FALSE,echo=TRUE,eval=FALSE,results='hide'----
+#  # Set options for using XeLaTeX font variants.
+#  options(tikzXelatexPackages = c(
+#    getOption('tikzXelatexPackages'),
+#    "\\usepackage[colorlinks, breaklinks]{hyperref}",
+#    "\\usepackage{color}",
+#    "\\definecolor{Gray}{rgb}{.7,.7,.7}",
+#    "\\definecolor{lightblue}{rgb}{.2,.5,1}",
+#    "\\definecolor{myred}{rgb}{1,0,0}",
+#    "\\newcommand{\\red}[1]{\\color{myred} #1}",
+#    "\\newcommand{\\reda}[1]{\\color{myred}\\fontspec[Variant=2]{Zapfino}#1}",
+#    "\\newcommand{\\redb}[1]{\\color{myred}\\fontspec[Variant=3]{Zapfino}#1}",
+#    "\\newcommand{\\redc}[1]{\\color{myred}\\fontspec[Variant=4]{Zapfino}#1}",
+#    "\\newcommand{\\redd}[1]{\\color{myred}\\fontspec[Variant=5]{Zapfino}#1}",
+#    "\\newcommand{\\rede}[1]{\\color{myred}\\fontspec[Variant=6]{Zapfino}#1}",
+#    "\\newcommand{\\redf}[1]{\\color{myred}\\fontspec[Variant=7]{Zapfino}#1}",
+#    "\\newcommand{\\redg}[1]{\\color{myred}\\fontspec[Variant=8]{Zapfino}#1}",
+#    "\\newcommand{\\lbl}[1]{\\color{lightblue} #1}",
+#    "\\newcommand{\\lbla}[1]{\\color{lightblue}\\fontspec[Variant=2]{Zapfino}#1}",
+#    "\\newcommand{\\lblb}[1]{\\color{lightblue}\\fontspec[Variant=3]{Zapfino}#1}",
+#    "\\newcommand{\\lblc}[1]{\\color{lightblue}\\fontspec[Variant=4]{Zapfino}#1}",
+#    "\\newcommand{\\lbld}[1]{\\color{lightblue}\\fontspec[Variant=5]{Zapfino}#1}",
+#    "\\newcommand{\\lble}[1]{\\color{lightblue}\\fontspec[Variant=6]{Zapfino}#1}",
+#    "\\newcommand{\\lblf}[1]{\\color{lightblue}\\fontspec[Variant=7]{Zapfino}#1}",
+#    "\\newcommand{\\lblg}[1]{\\color{lightblue}\\fontspec[Variant=8]{Zapfino}#1}",
+#    "\\newcommand{\\old}[1]{",
+#    "\\fontspec[Ligatures={Common, Rare},Variant=1,Swashes={LineInitial, LineFinal}]{Zapfino}",
+#    "\\fontsize{25pt}{30pt}\\selectfont #1}%",
+#    "\\newcommand{\\smallprint}[1]{\\fontspec{Hoefler Text}
+#      \\fontsize{10pt}{13pt}\\color{Gray}\\selectfont #1}"
+#  ))
+#  
+#  # Set the content using custom defined commands
+#  label <- c(
+#    "\\noindent{\\red d}roo{\\lbl g}",
+#    "\\noindent{\\reda d}roo{\\lbla g}",
+#    "\\noindent{\\redb d}roo{\\lblb g}",
+#    "\\noindent{\\redf d}roo{\\lblf g}\\\\[.3cm]",
+#    "\\noindent{\\redc d}roo{\\lblc g}",
+#    "\\noindent{\\redd d}roo{\\lbld g}",
+#    "\\noindent{\\rede d}roo{\\lble g}",
+#    "\\noindent{\\redg d}roo{\\lblg g}\\\\[.2cm]"
+#  )
+#  
+#  # Set the titles using custom defined commands, and hyperlinks
+#  title <- c(
+#  paste(
+#    "\\smallprint{D. Taraborelli (2008),",
+#    "\\href{http://nitens.org/taraborelli/latex}",
+#    "{The Beauty of \\LaTeX}}"
+#  ), paste(
+#    "\\smallprint{\\\\\\emph{Some rights reserved}.",
+#    "\\href{http://creativecommons.org/licenses/by-sa/3.0/}",
+#    "{\\textsc{cc-by-sa}}}"
+#  ))
+#  
+#  # Draw the graphic
+#  tikz('xelatexEx.tex',
+#    standAlone=TRUE,width=5,height=5,
+#    engine = 'xetex')
+#  lim <- 0:(length(label)+1)
+#  plot(lim,lim,cex=0,pch='.',xlab = title[2],ylab='', main = title[1])
+#  for(i in 1:length(label))
+#    text(i,i,label[i])
+#  dev.off()
 
-
-###################################################
-### code chunk number 10: xelatexFontVariantExample (eval = FALSE)
-###################################################
-## # Set options for using XeLaTeX font variants.
-## options(tikzXelatexPackages = c(
-##   getOption('tikzXelatexPackages'),
-##   "\\usepackage[colorlinks, breaklinks]{hyperref}",
-##   "\\usepackage{color}",
-##   "\\definecolor{Gray}{rgb}{.7,.7,.7}",
-##   "\\definecolor{lightblue}{rgb}{.2,.5,1}",
-##   "\\definecolor{myred}{rgb}{1,0,0}",
-##   "\\newcommand{\\red}[1]{\\color{myred} #1}",
-##   "\\newcommand{\\reda}[1]{\\color{myred}\\fontspec[Variant=2]{Zapfino}#1}",
-##   "\\newcommand{\\redb}[1]{\\color{myred}\\fontspec[Variant=3]{Zapfino}#1}",
-##   "\\newcommand{\\redc}[1]{\\color{myred}\\fontspec[Variant=4]{Zapfino}#1}",
-##   "\\newcommand{\\redd}[1]{\\color{myred}\\fontspec[Variant=5]{Zapfino}#1}",
-##   "\\newcommand{\\rede}[1]{\\color{myred}\\fontspec[Variant=6]{Zapfino}#1}",
-##   "\\newcommand{\\redf}[1]{\\color{myred}\\fontspec[Variant=7]{Zapfino}#1}",
-##   "\\newcommand{\\redg}[1]{\\color{myred}\\fontspec[Variant=8]{Zapfino}#1}",
-##   "\\newcommand{\\lbl}[1]{\\color{lightblue} #1}",
-##   "\\newcommand{\\lbla}[1]{\\color{lightblue}\\fontspec[Variant=2]{Zapfino}#1}",
-##   "\\newcommand{\\lblb}[1]{\\color{lightblue}\\fontspec[Variant=3]{Zapfino}#1}",
-##   "\\newcommand{\\lblc}[1]{\\color{lightblue}\\fontspec[Variant=4]{Zapfino}#1}",
-##   "\\newcommand{\\lbld}[1]{\\color{lightblue}\\fontspec[Variant=5]{Zapfino}#1}",
-##   "\\newcommand{\\lble}[1]{\\color{lightblue}\\fontspec[Variant=6]{Zapfino}#1}",
-##   "\\newcommand{\\lblf}[1]{\\color{lightblue}\\fontspec[Variant=7]{Zapfino}#1}",
-##   "\\newcommand{\\lblg}[1]{\\color{lightblue}\\fontspec[Variant=8]{Zapfino}#1}",
-##   "\\newcommand{\\old}[1]{",
-##   "\\fontspec[Ligatures={Common, Rare},Variant=1,Swashes={LineInitial, LineFinal}]{Zapfino}",
-##   "\\fontsize{25pt}{30pt}\\selectfont #1}%",
-##   "\\newcommand{\\smallprint}[1]{\\fontspec{Hoefler Text}
-##     \\fontsize{10pt}{13pt}\\color{Gray}\\selectfont #1}"
-## ))
-## 
-## # Set the content using custom defined commands
-## label <- c(
-##   "\\noindent{\\red d}roo{\\lbl g}",
-##   "\\noindent{\\reda d}roo{\\lbla g}",
-##   "\\noindent{\\redb d}roo{\\lblb g}",
-##   "\\noindent{\\redf d}roo{\\lblf g}\\\\[.3cm]",
-##   "\\noindent{\\redc d}roo{\\lblc g}",
-##   "\\noindent{\\redd d}roo{\\lbld g}",
-##   "\\noindent{\\rede d}roo{\\lble g}",
-##   "\\noindent{\\redg d}roo{\\lblg g}\\\\[.2cm]"
-## )
-## 
-## # Set the titles using custom defined commands, and hyperlinks
-## title <- c(
-## paste(
-##   "\\smallprint{D. Taraborelli (2008),",
-##   "\\href{http://nitens.org/taraborelli/latex}",
-##   "{The Beauty of \\LaTeX}}"
-## ), paste(
-##   "\\smallprint{\\\\\\emph{Some rights reserved}.",
-##   "\\href{http://creativecommons.org/licenses/by-sa/3.0/}",
-##   "{\\textsc{cc-by-sa}}}"
-## ))
-## 
-## # Draw the graphic
-## tikz('xelatexEx.tex',
-##   standAlone=TRUE,width=5,height=5,
-##   engine = 'xetex')
-## lim <- 0:(length(label)+1)
-## plot(lim,lim,cex=0,pch='.',xlab = title[2],ylab='', main = title[1])
-## for(i in 1:length(label))
-##   text(i,i,label[i])
-## dev.off()
-
-
-###################################################
-### code chunk number 11: annotation
-###################################################
-require(tikzDevice)
+## ----annotation,echo=TRUE,results='hide',tidy=FALSE----------------------
+library(tikzDevice)
 
 # Load some additional TikZ libraries
 tikz("figs/annotation.tex",width=4,height=4,
@@ -252,17 +258,11 @@ tikzNode(
 
 dev.off()
 
-
-###################################################
-### code chunk number 12: strWidthDemo
-###################################################
+## ----strWidthDemo,echo=T-------------------------------------------------
 getLatexStrWidth( "The symbol: alpha" )
 getLatexStrWidth( "The symbol: $\\alpha$" )
 
-
-###################################################
-### code chunk number 13: charMetricDemo
-###################################################
+## ----charMetricDemo,echo=T,tidy=FALSE------------------------------------
 # Get metrics for 'y'
 getLatexCharMetrics(121)
 
@@ -270,14 +270,10 @@ getLatexCharMetrics(121)
 # and should be zero or very close to zero.
 getLatexCharMetrics(120)
 
-
-###################################################
-### code chunk number 14: charMetricErrors
-###################################################
+## ----charMetricErrors,echo=T,tidy=FALSE----------------------------------
 getLatexCharMetrics('y')
 getLatexCharMetrics(20)
 
 # Will return metrics for 'y'
 getLatexCharMetrics(121.99)
-
 
