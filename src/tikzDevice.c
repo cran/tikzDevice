@@ -1807,6 +1807,8 @@ static void TikZ_DefineDrawColor(tikzDevDesc *tikzInfo, int color, TikZ_DrawOps 
   {
     pdest = &tikzInfo->fillColor;
   }
+  else
+    return; // shouldn't happen, just to satisfy the compiler
 
   if( TikZ_CheckAndAddColor(tikzInfo, color) )
   {
@@ -2335,7 +2337,7 @@ static void const_free(const void *ptr){
   free((void*)ptr);
 }
 
-static void strlcpy(char *dst, const char* src, size_t n){
+static void strlcpy_(char *dst, const char* src, size_t n){
   if (n <= 0) return;
   strncpy(dst, src, n - 1);
   dst[n - 1] = '\0';
