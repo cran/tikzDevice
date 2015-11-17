@@ -76,7 +76,7 @@
 #      engine = getOption("tikzDefaultEngine"), documentDeclaration = getOption("tikzDocumentDeclaration"), 
 #      packages, footer = getOption("tikzFooter"), symbolicColors = getOption("tikzSymbolicColors"), 
 #      colorFileName = "%s_colors.tex", maxSymbolicColors = getOption("tikzMaxSymbolicColors"), 
-#      timestamp = TRUE)
+#      timestamp = TRUE, verbose = interactive())
 
 ## ----simpleEx,echo=TRUE,results='hide'-----------------------------------
 library(tikzDevice)
