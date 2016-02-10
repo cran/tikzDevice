@@ -1,6 +1,6 @@
-3c2d5d0b3bf0a3b2491dbfa224dbcabb *DESCRIPTION
+4bf6a24b03889eb42e869625ac594ca0 *DESCRIPTION
 a9005515973c6a56380b0a10f4ba579f *NAMESPACE
-07923102c5c11e3587e9831db957cfed *NEWS.md
+d1716cc59050e96ce58bb7b16282be1b *NEWS.md
 f1da36f1631da1ce3f21e4389ac1cde5 *R/cacheMetrics.R
 98a1a55a550d923056ac0bcef353ba14 *R/deviceUtils.R
 03257455b23a17c1f020e50863da715c *R/latexStrWidth.R
@@ -13,7 +13,7 @@ f1da36f1631da1ce3f21e4389ac1cde5 *R/cacheMetrics.R
 f53cdeb868fa4559eb457681e65db549 *build/vignette.rds
 85af3ae9f36af9053bdf17edde20ad68 *inst/doc/tikzDevice.R
 f4fa3184e3a7b39ae7ee766a06029ca1 *inst/doc/tikzDevice.Rnw
-c20494b2c2a46252d81bc1c79416de24 *inst/doc/tikzDevice.pdf
+69af2f57d24308cd26bb471e3a033b77 *inst/doc/tikzDevice.pdf
 a1b0cf9a5a6741378e76f7b6868a9eb4 *man/anyMultibyteUTF8Characters.Rd
 2c1fe2e35461be861086b5f4b044e775 *man/getLatexStrWidth.Rd
 87313446821b6fccd0687464692b952d *man/gridToDevice.Rd
@@ -23,7 +23,7 @@ a1b0cf9a5a6741378e76f7b6868a9eb4 *man/anyMultibyteUTF8Characters.Rd
 3d759e71baa1ffe17e458f66ea03b0dd *man/tikzAnnotate.Rd
 ccb9123d1562d5f72f818d8568c2c947 *man/tikzCompilerInfo.Rd
 b6727c540f8389f1c71d8c548de26c1b *man/tikzDevice-package.Rd
-573c80abc27c2ba512d37cb864bc9153 *src/tikzDevice.c
+9a9c7bd372e4a73773b979fce8742248 *src/tikzDevice.c
 e24c44e35b90aa058354bb52e219bd19 *src/tikzDevice.h
 d41d8cd98f00b204e9800998ecf8427e *tests/testthat/Rplots.tex
 7781ce122de246891adbc5ea9d220666 *tests/testthat/Rplots_colors.tex
@@ -71,13 +71,13 @@ bed326a4880addb9d61a2f09017b7b7b *tests/testthat/standard_graphs/text_color.pdf
 f44c49b9d96b8d11b8de10686c7f8daf *tests/unit_tests.R
 6141124f420ca67b5b282ea4e18d23b2 *vignettes/agufull04.bst
 8de32046540ba433cdc539742072bfbf *vignettes/consoleExample.tex
-fe8467ecf336a92727334670f5dae2ec *vignettes/figs/annotation.tex
-855ef2ac881f17baf55178242a6a23e2 *vignettes/figs/latexEx.tex
-49beeeac0e9a03556d92dcbf00e78d84 *vignettes/figs/pdf-example.pdf
-edf925043deeef9c31e7e3bac5b41f18 *vignettes/figs/simpleEx.tex
-029321d08ddf2a8c5af76680ffff6972 *vignettes/figs/tikz-example.tex
-17e326e9e8cda94108f3637f2a64c19a *vignettes/figs/titlePlot.tex
-6ce6fb0b9472a5d643e519c1857080a7 *vignettes/figs/westCoast.tex
+6b2554232e8c79f812e81b6bf7ad96ef *vignettes/figs/annotation.tex
+f6790980753f3295a8ee95e8523c721e *vignettes/figs/latexEx.tex
+adce6b736be0f998be04643c2e5ce69e *vignettes/figs/pdf-example.pdf
+9633410e537b6ca0b1365bc084b0799e *vignettes/figs/simpleEx.tex
+5a7ccae3400bf9df4de689741f22f9db *vignettes/figs/tikz-example.tex
+a1fb04d372395eeae231c5726a3afa27 *vignettes/figs/titlePlot.tex
+ed4789db739f3c298f7351923835d903 *vignettes/figs/westCoast.tex
 7012cde5b60209165cdc281d888b33ac *vignettes/img/Rlogo.png
 deea1d45830a3efd285ff6dd630cb2dd *vignettes/img/plotmathDefault.pdf
 91b12c045d1f42636f64062d2b59d869 *vignettes/img/plotmathTikz.pdf

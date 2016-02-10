@@ -2,8 +2,8 @@ Encoding: UTF-8
 Package: tikzDevice
 Type: Package
 Title: R Graphics Output in LaTeX Format
-Version: 0.10
-Date: 2016-02-04
+Version: 0.10-1
+Date: 2016-02-09
 Authors@R: c( person("Charlie", "Sharpsteen", role = "aut"),
         person("Cameron", "Bracken", role = "aut"), person("Kirill",
         "Müller", role = c("ctb", "cre"), email =
@@ -29,11 +29,11 @@ LazyLoad: yes
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
 NeedsCompilation: yes
-Packaged: 2016-02-06 00:52:14 UTC; muelleki
+Packaged: 2016-02-09 20:31:26 UTC; muelleki
 Author: Charlie Sharpsteen [aut],
   Cameron Bracken [aut],
   Kirill Müller [ctb, cre],
   Yihui Xie [ctb]
 Maintainer: Kirill Müller <krlmlr+r@mailbox.org>
 Repository: CRAN
-Date/Publication: 2016-02-06 11:07:57
+Date/Publication: 2016-02-10 09:11:31
