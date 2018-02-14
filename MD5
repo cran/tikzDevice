@@ -1,5 +1,5 @@
-4bf6a24b03889eb42e869625ac594ca0 *DESCRIPTION
-a9005515973c6a56380b0a10f4ba579f *NAMESPACE
+a9632471077a77d3667aa559488cb106 *DESCRIPTION
+a71122175b640610633907100056cdb7 *NAMESPACE
 d1716cc59050e96ce58bb7b16282be1b *NEWS.md
 f1da36f1631da1ce3f21e4389ac1cde5 *R/cacheMetrics.R
 98a1a55a550d923056ac0bcef353ba14 *R/deviceUtils.R
@@ -23,6 +23,7 @@ a1b0cf9a5a6741378e76f7b6868a9eb4 *man/anyMultibyteUTF8Characters.Rd
 3d759e71baa1ffe17e458f66ea03b0dd *man/tikzAnnotate.Rd
 ccb9123d1562d5f72f818d8568c2c947 *man/tikzCompilerInfo.Rd
 b6727c540f8389f1c71d8c548de26c1b *man/tikzDevice-package.Rd
+25ff90b456275a03cfe03ef046158aae *src/init.c
 9a9c7bd372e4a73773b979fce8742248 *src/tikzDevice.c
 e24c44e35b90aa058354bb52e219bd19 *src/tikzDevice.h
 d41d8cd98f00b204e9800998ecf8427e *tests/testthat/Rplots.tex

@@ -2,7 +2,7 @@ Encoding: UTF-8
 Package: tikzDevice
 Type: Package
 Title: R Graphics Output in LaTeX Format
-Version: 0.10-1
+Version: 0.10-1.1
 Date: 2016-02-09
 Authors@R: c( person("Charlie", "Sharpsteen", role = "aut"),
         person("Cameron", "Bracken", role = "aut"), person("Kirill",
@@ -23,17 +23,22 @@ License: GPL (>= 2)
 Depends: R (>= 2.14.0)
 Imports: filehash (>= 2.3), png
 Suggests: testthat (>= 0.8.1), evaluate, stringr, ggplot2, maps, knitr,
-        crayon
+        crayon, formatR
 SystemRequirements: pgf (>= 2.00)
 LazyLoad: yes
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
 NeedsCompilation: yes
-Packaged: 2016-02-09 20:31:26 UTC; muelleki
+Packaged: 2018-02-14 11:38:13 UTC; ripley
 Author: Charlie Sharpsteen [aut],
   Cameron Bracken [aut],
   Kirill Müller [ctb, cre],
   Yihui Xie [ctb]
-Maintainer: Kirill Müller <krlmlr+r@mailbox.org>
+Maintainer: ORPHANED
 Repository: CRAN
-Date/Publication: 2016-02-10 09:11:31
+Date/Publication: 2018-02-14 11:53:11 UTC
+X-CRAN-Original-Maintainer: Kirill Müller <krlmlr+r@mailbox.org>
+X-CRAN-Comment: Orphaned and corrected on 2018-02-14 as check errors
+        were not corrected despite reminders.
+ .
+ Included missing Suggests and registration issues.
