@@ -2,8 +2,8 @@ Encoding: UTF-8
 Package: tikzDevice
 Type: Package
 Title: R Graphics Output in LaTeX Format
-Version: 0.10-1.1
-Date: 2016-02-09
+Version: 0.10-1.2
+Date: 2018-02-14
 Authors@R: c( person("Charlie", "Sharpsteen", role = "aut"),
         person("Cameron", "Bracken", role = "aut"), person("Kirill",
         "Müller", role = c("ctb", "cre"), email =
@@ -29,16 +29,16 @@ LazyLoad: yes
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
 NeedsCompilation: yes
-Packaged: 2018-02-14 11:38:13 UTC; ripley
+Packaged: 2018-02-14 12:52:56 UTC; ripley
 Author: Charlie Sharpsteen [aut],
   Cameron Bracken [aut],
   Kirill Müller [ctb, cre],
   Yihui Xie [ctb]
 Maintainer: ORPHANED
 Repository: CRAN
-Date/Publication: 2018-02-14 11:53:11 UTC
+Date/Publication: 2018-02-14 13:38:52 UTC
 X-CRAN-Original-Maintainer: Kirill Müller <krlmlr+r@mailbox.org>
 X-CRAN-Comment: Orphaned and corrected on 2018-02-14 as check errors
         were not corrected despite reminders.
  .
- Included missing Suggests and registration issues.
+ Included missing Suggests, rchk and registration issues.
