@@ -2,8 +2,8 @@ Encoding: UTF-8
 Package: tikzDevice
 Type: Package
 Title: R Graphics Output in LaTeX Format
-Version: 0.10-1.2
-Date: 2018-02-14
+Version: 0.11
+Date: 2018-03-18
 Authors@R: c( person("Charlie", "Sharpsteen", role = "aut"),
         person("Cameron", "Bracken", role = "aut"), person("Kirill",
         "Müller", role = c("ctb", "cre"), email =
@@ -22,23 +22,23 @@ Description: Provides a graphics output device for R that records plots
 License: GPL (>= 2)
 Depends: R (>= 2.14.0)
 Imports: filehash (>= 2.3), png
-Suggests: testthat (>= 0.8.1), evaluate, stringr, ggplot2, maps, knitr,
-        crayon, formatR
+Suggests: evaluate, formatR, ggplot2, knitr, maps, stringr, testthat
+        (>= 0.8.1), withr
 SystemRequirements: pgf (>= 2.00)
 LazyLoad: yes
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1.9000
 NeedsCompilation: yes
-Packaged: 2018-02-14 12:52:56 UTC; ripley
+Packaged: 2018-03-18 22:48:27 UTC; muelleki
 Author: Charlie Sharpsteen [aut],
   Cameron Bracken [aut],
   Kirill Müller [ctb, cre],
   Yihui Xie [ctb]
 Maintainer: ORPHANED
-Repository: CRAN
-Date/Publication: 2018-02-14 13:38:52 UTC
 X-CRAN-Original-Maintainer: Kirill Müller <krlmlr+r@mailbox.org>
 X-CRAN-Comment: Orphaned and corrected on 2018-02-14 as check errors
-        were not corrected despite reminders.
+        were not corrected despite reminder.
  .
  Included missing Suggests, rchk and registration issues.
+Repository: CRAN
+Date/Publication: 2018-03-19 08:38:43 UTC

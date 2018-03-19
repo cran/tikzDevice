@@ -3,19 +3,8 @@
 #include <stdlib.h> // for NULL
 #include <R_ext/Rdynload.h>
 
-/* FIXME: 
-   Check these declarations against the C/Fortran source code.
-*/
+#include "tikzDevice.h"
 
-/* .C calls */
-extern void TikZ_Annotate(void *, void *, void *);
-
-/* .Call calls */
-extern SEXP TikZ_DeviceInfo(SEXP);
-extern SEXP TikZ_EvalWithoutInterrupts(SEXP, SEXP);
-
-/* .External calls */
-extern SEXP TikZ_StartDevice(SEXP);
 
 static const R_CMethodDef CEntries[] = {
     {"TikZ_Annotate", (DL_FUNC) &TikZ_Annotate, 3},
@@ -29,7 +18,7 @@ static const R_CallMethodDef CallEntries[] = {
 };
 
 static const R_ExternalMethodDef ExternalEntries[] = {
-    {"TikZ_StartDevice", (DL_FUNC) &TikZ_StartDevice, 21},
+    {"TikZ_StartDevice", (DL_FUNC) &TikZ_StartDevice, -1},
     {NULL, NULL, 0}
 };
 

@@ -69,14 +69,8 @@
   plot(1, 1, main = 'Hello \\TeX !')
   dev.off()
 
-## ----tikzArgs, code=formatR::usage(tikz), eval=FALSE---------------------
-#  tikz(file = ifelse(onefile, "./Rplots.tex", "./Rplot%03d.tex"), width = 7, height = 7, 
-#      onefile = TRUE, bg = "transparent", fg = "black", pointsize = 10, lwdUnit = getOption("tikzLwdUnit"), 
-#      standAlone = FALSE, bareBones = FALSE, console = FALSE, sanitize = FALSE, 
-#      engine = getOption("tikzDefaultEngine"), documentDeclaration = getOption("tikzDocumentDeclaration"), 
-#      packages, footer = getOption("tikzFooter"), symbolicColors = getOption("tikzSymbolicColors"), 
-#      colorFileName = "%s_colors.tex", maxSymbolicColors = getOption("tikzMaxSymbolicColors"), 
-#      timestamp = TRUE, verbose = interactive())
+## ----tikzArgs------------------------------------------------------------
+formatR::usage(tikz)
 
 ## ----simpleEx,echo=TRUE,results='hide'-----------------------------------
 library(tikzDevice)

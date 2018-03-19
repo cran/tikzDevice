@@ -905,9 +905,10 @@ static void TikZ_MetricInfo(int c, const pGEcontext plotParams,
   *descent = REAL(RMetrics)[1];
   *width = REAL(RMetrics)[2];
 
-  if( tikzInfo->debug == TRUE )
-  printOutput( tikzInfo, "%% Calculated character metrics. ascent: %f, descent: %f, width: %f\n",
-    *ascent, *descent, *width);
+  if( tikzInfo->debug == TRUE ) {
+    printOutput( tikzInfo, "%% Calculated character metrics. ascent: %f, descent: %f, width: %f\n",
+      *ascent, *descent, *width);
+  }
 
   UNPROTECT(4);
 
@@ -1098,11 +1099,8 @@ static double TikZ_StrWidth( const char *str,
   */
   double width = REAL(RStrWidth)[0];
 
-  /*
-   * Since we called PROTECT thrice, we must call UNPROTECT
-   * and pass the number 3.
-   */
   UNPROTECT(4);
+
   if(tikzInfo->sanitize == TRUE){ free(cleanString); }
 
   /*Show only for debugging*/
@@ -2064,9 +2062,12 @@ SEXP TikZ_EvalWithoutInterrupts(SEXP expr, SEXP envir){
 
   SEXP result;
 
-  BEGIN_SUSPEND_INTERRUPTS{
-    result = PROTECT(eval(expr, envir));
-  } END_SUSPEND_INTERRUPTS;
+  BEGIN_SUSPEND_INTERRUPTS
+  {
+    PROTECT( result = eval(expr, envir) );
+  }
+  END_SUSPEND_INTERRUPTS;
+
   UNPROTECT(1);
 
   return result;
@@ -2206,8 +2207,8 @@ static char *Sanitize(const char *str){
   */
   char *cleanStringCP = calloc_strcpy(cleanString);
 
-  // Since we called PROTECT three times, we must call UNPROTECT
-  // and pass the number 3.
+  // Call UNPROTECT() with an argument that matches the number of times
+  // PROTECT() has been called.
   UNPROTECT(4);
 
   return cleanStringCP;

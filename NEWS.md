@@ -1,3 +1,34 @@
+# tikzDevice 0.11 (2018-03-10)
+
+Bug fixes
+---------
+
+- Fix potential protection issues (#161).
+- Zero-length strings are not treated as multibyte character strings anymore.
+- Registering native methods to fix `R CMD check` warnings.
+- Updating the filehash package no longer causes the tikzDevice package to fail (#168).
+- Remove probably harmless extra space from text being measured.
+- Don't overwrite string's encoding in `anyMultibyteUTF8Characters()` (#158, @jszhao).
+- Enforce the encoding of temporary TeX file to UTF-8 (#159, @jszhao).
+- Don't call `library(grid)` from package code anymore.
+- Code from manual now contains simple apostrophes to allow copy-paste (#139).
+
+Features
+--------
+
+- The new `tikzTest()` function (via `getLatexStrWidth(diagnose = TRUE)`) now writes a complete LaTeX document, which allows e.g. MikTeX to install missing LaTeX packages (#142, #149).
+- If measurement fails, the `.tex` and `.log` files are not printed anymore,
+  instead the location of these files is shown.
+- Support LuaLaTeX > 0.85 by loading the luatex85 package if it exists and avoiding loading xunicode (#150).
+- Temporary .tex and .log files are created in a separate directory for each run.
+
+Internal
+--------
+
+- Consistent code style with the help of the styler package.
+- `load_all()` works now.
+
+
 Version 0.10-1 (2016-02-09)
 ===
 

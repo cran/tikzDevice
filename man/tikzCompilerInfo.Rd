@@ -19,10 +19,9 @@ device will use to calculate character metrics. Information on LaTeX will
 always be available but information on XeLaTeX and LuaLaTeX will only be
 reported if the compilers were found.
 }
+\seealso{
+\code{\link[=tikz]{tikz()}}
+}
 \author{
 Charlie Sharpsteen \email{source@sharpsteen.net}
 }
-\seealso{
-\code{\link{tikz}}
-}
-
