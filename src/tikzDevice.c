@@ -1368,20 +1368,32 @@ static void TikZ_Polyline( int n, double *x, double *y,
 
   /* End options, print first set of coordinates. */
   printOutput(tikzInfo, "] (%6.2f,%6.2f) --\n",
-    x[0],y[0]);
+              x[0],y[0]);
+
+  /*Show only for debugging*/
+  if(tikzInfo->debug == TRUE)
+    printOutput(tikzInfo, "%% First point x = %f, y = %f\n", x[0],y[0]);
 
   /* Print coordinates for the middle segments of the line. */
   int i;
   for ( i = 1; i < n-1; i++ ){
 
     printOutput(tikzInfo, "\t(%6.2f,%6.2f) --\n",
-      x[i],y[i]);
+                x[i],y[i]);
+
+    /*Show only for debugging*/
+    if(tikzInfo->debug == TRUE)
+      printOutput(tikzInfo, "%% Next point x = %f, y = %f\n", x[i],y[i]);
 
   }
 
   /* Print last set of coordinates. End path. */
   printOutput(tikzInfo, "\t(%6.2f,%6.2f);\n",
     x[n-1],y[n-1]);
+
+  /*Show only for debugging*/
+  if(tikzInfo->debug == TRUE)
+    printOutput(tikzInfo, "%% Final point x = %f, y = %f\n", x[n-1],y[n-1]);
 
   /*Show only for debugging*/
   if(tikzInfo->debug == TRUE)
@@ -1415,12 +1427,20 @@ static void TikZ_Polygon( int n, double *x, double *y,
   printOutput(tikzInfo, "] (%6.2f,%6.2f) --\n",
     x[0],y[0]);
 
+  /*Show only for debugging*/
+  if(tikzInfo->debug == TRUE)
+    printOutput(tikzInfo, "%% First point x = %f, y = %f\n", x[0],y[0]);
+
   /* Print coordinates for the middle segments of the line. */
   int i;
   for ( i = 1; i < n; i++ ){
 
     printOutput(tikzInfo, "\t(%6.2f,%6.2f) --\n",
       x[i],y[i]);
+
+    /*Show only for debugging*/
+    if(tikzInfo->debug == TRUE)
+      printOutput(tikzInfo, "%% Next point x = %f, y = %f\n", x[i],y[i]);
 
   }
 
@@ -1430,7 +1450,7 @@ static void TikZ_Polygon( int n, double *x, double *y,
   /*Show only for debugging*/
   if(tikzInfo->debug == TRUE)
     printOutput(tikzInfo,
-      "%% End Polyline\n");
+      "%% End Polygon\n");
 
 }
 
@@ -1943,7 +1963,9 @@ static void TikZ_WriteLineStyle(pGEcontext plotParams, tikzDevDesc *tikzInfo)
     case GE_MITRE_JOIN:
       /* Default if nothing is specified */
       if(plotParams->lmitre != 10)
-        printOutput(tikzInfo, ",mitre limit=%4.2f",plotParams->lmitre);
+        /* Here it has to be "miter" because pgfkeys wants it to be
+         * written this way. */
+        printOutput(tikzInfo, ",miter limit=%4.2f",plotParams->lmitre);
       break;
     case GE_BEVEL_JOIN:
       printOutput(tikzInfo, ",line join=bevel");
