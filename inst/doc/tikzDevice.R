@@ -1,4 +1,4 @@
-## ----setup,echo=FALSE,results='hide'-------------------------------------
+## ----setup,echo=FALSE,results='hide'------------------------------------------
   library(tikzDevice)
   if( !file.exists('figs') ){dir.create( 'figs' )}
 
@@ -38,7 +38,7 @@
     chunk = function(x, options) x
   )
 
-## ----tikzTitlePlot,results='hide'----------------------------------------
+## ----tikzTitlePlot,results='hide'---------------------------------------------
   tikz('figs/titlePlot.tex',width=4,height=4)
 
   x <- seq(-4.5,4.5,length.out=100)
@@ -59,26 +59,26 @@
 
   dev.off()
 
-## ----pdf-example,echo=FALSE,results='hide'-------------------------------
+## ----pdf-example,echo=FALSE,results='hide'------------------------------------
   pdf('figs/pdf-example.pdf', width = 3.25, height = 3.25)
   plot(1, 1, main = 'Hello!', ps = 10)
   dev.off()
 
-## ----tikz-example,echo=FALSE,results='hide'------------------------------
+## ----tikz-example,echo=FALSE,results='hide'-----------------------------------
   tikz('figs/tikz-example.tex', width = 3.25, height = 3.25)
   plot(1, 1, main = 'Hello \\TeX !')
   dev.off()
 
-## ----tikzArgs------------------------------------------------------------
+## ----tikzArgs-----------------------------------------------------------------
 formatR::usage(tikz)
 
-## ----simpleEx,echo=TRUE,results='hide'-----------------------------------
+## ----simpleEx,echo=TRUE,results='hide'----------------------------------------
 library(tikzDevice)
 tikz('figs/simpleEx.tex',width=3.5,height=3.5)
 plot(1,main='Hello World!')
 dev.off()
 
-## ----latexEx,echo=TRUE,results='hide',tidy=FALSE-------------------------
+## ----latexEx,echo=TRUE,results='hide',tidy=FALSE------------------------------
 library(tikzDevice)
 tikz('figs/latexEx.tex',
   width=3.5,height=3.5)
@@ -104,7 +104,7 @@ legend('bottomright', legend =
 
 dev.off()
 
-## ----bareBonesExample,echo=TRUE,results='hide',tidy=FALSE----------------
+## ----bareBonesExample,echo=TRUE,results='hide',tidy=FALSE---------------------
 library(tikzDevice)
 library(maps)
 
@@ -123,13 +123,13 @@ tikzCoord(-122.419, 37.775, 'sfBay')
 
 dev.off()
 
-## ----standAloneExample,echo=TRUE,results='hide',tidy=FALSE---------------
+## ----standAloneExample,echo=TRUE,results='hide',tidy=FALSE--------------------
 library(tikzDevice)
 tikz('standAloneExample.tex',standAlone=TRUE)
 plot(sin,-pi,2*pi,main="A Stand Alone TikZ Plot")
 dev.off()
 
-## ----standAloneCompileExample, results='hide', eval=FALSE----------------
+## ----standAloneCompileExample, results='hide', eval=FALSE---------------------
 #  
 #    library(tools)
 #  
@@ -212,7 +212,7 @@ dev.off()
 #    text(i,i,label[i])
 #  dev.off()
 
-## ----annotation,echo=TRUE,results='hide',tidy=FALSE----------------------
+## ----annotation,echo=TRUE,results='hide',tidy=FALSE---------------------------
 library(tikzDevice)
 
 # Load some additional TikZ libraries
@@ -252,11 +252,11 @@ tikzNode(
 
 dev.off()
 
-## ----strWidthDemo,echo=T-------------------------------------------------
+## ----strWidthDemo,echo=T------------------------------------------------------
 getLatexStrWidth( "The symbol: alpha" )
 getLatexStrWidth( "The symbol: $\\alpha$" )
 
-## ----charMetricDemo,echo=T,tidy=FALSE------------------------------------
+## ----charMetricDemo,echo=T,tidy=FALSE-----------------------------------------
 # Get metrics for 'y'
 getLatexCharMetrics(121)
 
@@ -264,7 +264,7 @@ getLatexCharMetrics(121)
 # and should be zero or very close to zero.
 getLatexCharMetrics(120)
 
-## ----charMetricErrors,echo=T,tidy=FALSE----------------------------------
+## ----charMetricErrors,echo=T,tidy=FALSE---------------------------------------
 getLatexCharMetrics('y')
 getLatexCharMetrics(20)
 

@@ -2,7 +2,7 @@ Encoding: UTF-8
 Package: tikzDevice
 Type: Package
 Title: R Graphics Output in LaTeX Format
-Version: 0.12.3
+Version: 0.12.3.1
 Authors@R: c( person("Charlie", "Sharpsteen", role = "aut"),
         person("Cameron", "Bracken", role = "aut"), person("Kirill",
         "Müller", role = c("ctb"), email =
@@ -31,7 +31,7 @@ LazyLoad: yes
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
 NeedsCompilation: yes
-Packaged: 2019-08-07 10:42:07 UTC; ralf
+Packaged: 2020-06-30 04:56:25 UTC; ripley
 Author: Charlie Sharpsteen [aut],
   Cameron Bracken [aut],
   Kirill Müller [ctb],
@@ -40,4 +40,4 @@ Author: Charlie Sharpsteen [aut],
   Nico Bellack [ctb]
 Maintainer: Ralf Stubner <ralf.stubner@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-08-07 11:50:02 UTC
+Date/Publication: 2020-06-30 07:28:18 UTC

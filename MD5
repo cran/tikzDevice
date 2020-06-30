@@ -1,4 +1,4 @@
-2f404b5538acea1dd078a021822e6dc9 *DESCRIPTION
+86ceac7868ae93fda35bd6175bc8e47f *DESCRIPTION
 7a2c97129b175a3d841e1b63bfd38275 *NAMESPACE
 10907756fd78170004f8fc73705c662e *NEWS.md
 180f22250bd963d01842d8f07d1c73cb *R/cacheMetrics.R
@@ -10,10 +10,10 @@ f43e1df527346b9e75d7b5b2f3551393 *R/tikzAnnotate.R
 23897a7285367c9c6c1ba888f8bbbc76 *R/tikzDevice-package.R
 3896f763239486558020d501a90e649f *R/tikzInternal.R
 f6c367ba9441818d58833f3d72d7a7ff *R/zzz.R
-5415abd31a8617f2357abf8c33b9a8c7 *build/vignette.rds
-aa6fda2c176d6bd95d03c080359411c8 *inst/doc/tikzDevice.R
+31226ab586e252f07c5b6e9e14f31809 *build/vignette.rds
+f2196b8feee0ef235e7d26f8abc38bdc *inst/doc/tikzDevice.R
 29388c76e171b2ec0c85c4cada3d45ca *inst/doc/tikzDevice.Rnw
-3a8033adc43fa756f97a04e09a2d933e *inst/doc/tikzDevice.pdf
+49c9058a36ef0684c9191c2901deded0 *inst/doc/tikzDevice.pdf
 1a9cd8e67414655e2a097c47af9d7e31 *man/anyMultibyteUTF8Characters.Rd
 3610d0d0066e61af397434e9dc49dbce *man/getLatexStrWidth.Rd
 493ee91d3944636955aee123cbc64b72 *man/gridToDevice.Rd
@@ -25,8 +25,8 @@ dc43a0f66221315d142adafb185d52da *man/setTikzDefaults.Rd
 f71735c32d33acfdc0d276555bc04f66 *man/tikzDevice-package.Rd
 8d53cf95c1a5f868cfa356a4cd4bab3d *man/tikzTest.Rd
 25f6fffedc0ec883eaccffe62bf8a1a7 *src/init.c
-aca04157e7223ad376dab725b87f5e9d *src/tikzDevice.c
-a2ebc5c42374a2405cd86178aad39d7e *src/tikzDevice.h
+20cd584bf59a8080868c7e4e2c990204 *src/tikzDevice.c
+f496c86a339fb338e2ee7595e890733c *src/tikzDevice.h
 af35fe2b1bf50b3e694ca8381fc48b57 *tests/testthat.R
 d41d8cd98f00b204e9800998ecf8427e *tests/testthat/Rplots.tex
 7781ce122de246891adbc5ea9d220666 *tests/testthat/Rplots_colors.tex
