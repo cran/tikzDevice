@@ -1,3 +1,19 @@
+# tikzDevice 0.12.4 (2023-02-09)
+
+Bug fixes
+---------
+
+- replace sprintf with snprintf to remove WARNING on CRAN (#219 fixing #218)
+
+- current working directory is added to TEXINPUTS (#203 fixing #197 and #198)
+
+- make sure that tikzInfo->outColorFileName is always initialized (Dean Scarff
+  in #200 fixing #199)
+  
+- Finally merged #206 from Paul Murrell to make `tikzDevice` compatible with the
+  graphics engine in R >= 4.1  
+
+
 # tikzDevice 0.12.3 (2019-08-07)
 
 Bug fixes
