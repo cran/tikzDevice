@@ -1,6 +1,6 @@
-8d0267e8a0966a537e2bd64447ce2b72 *DESCRIPTION
+65e9cff7286715fd753b583dbbda8b00 *DESCRIPTION
 7a2c97129b175a3d841e1b63bfd38275 *NAMESPACE
-0cf5d592d3d29acb36bce3ecbe696643 *NEWS.md
+8c66fa581416093ffc5d02453fca914e *NEWS.md
 180f22250bd963d01842d8f07d1c73cb *R/cacheMetrics.R
 484c59262262d21744488c99498d3a83 *R/deviceUtils.R
 3bb8f28681df13c1976c8ad96fee7fbb *R/latexStrWidth.R
@@ -10,10 +10,10 @@ f43e1df527346b9e75d7b5b2f3551393 *R/tikzAnnotate.R
 89f2d844dd37f29a4be6f95f4fa0b1ce *R/tikzDevice-package.R
 3896f763239486558020d501a90e649f *R/tikzInternal.R
 f6c367ba9441818d58833f3d72d7a7ff *R/zzz.R
-c9281cdb146f1c47c588e63403ecfd86 *build/vignette.rds
+267993c901f5fb4d0baff2bb2c5654c1 *build/vignette.rds
 f2196b8feee0ef235e7d26f8abc38bdc *inst/doc/tikzDevice.R
-29388c76e171b2ec0c85c4cada3d45ca *inst/doc/tikzDevice.Rnw
-c286cefa30abbd223aba091e252f646a *inst/doc/tikzDevice.pdf
+8437193c234880e07c9b104347f604a7 *inst/doc/tikzDevice.Rnw
+1e3e0fc04bf78dbe43a90048125ffc75 *inst/doc/tikzDevice.pdf
 1a9cd8e67414655e2a097c47af9d7e31 *man/anyMultibyteUTF8Characters.Rd
 311e91a324398779c9c0565b636566dd *man/getLatexStrWidth.Rd
 493ee91d3944636955aee123cbc64b72 *man/gridToDevice.Rd
@@ -70,6 +70,13 @@ ac5c62de145f20def92f053245b23413 *tests/testthat/test_metrics_dict.R
 df490cf5d84f96c9b55035c78a470124 *tests/testthat/test_pointsize.R
 6141124f420ca67b5b282ea4e18d23b2 *vignettes/agufull04.bst
 8de32046540ba433cdc539742072bfbf *vignettes/consoleExample.tex
+c3660c3f3b905c28dbb0136ee74cbec2 *vignettes/figs/annotation.tex
+dcb1f03393b34f8bd213e68463d2b62c *vignettes/figs/latexEx.tex
+678a1593dfb50a5d01fa72f6620695bd *vignettes/figs/pdf-example.pdf
+f7ac8c97c10f93d1c5c43dc8551ac665 *vignettes/figs/simpleEx.tex
+550e0cdd048cc738a905ebaa5c260c38 *vignettes/figs/tikz-example.tex
+73deb433353117c633f46321bbec2938 *vignettes/figs/titlePlot.tex
+1b2cdf5c0da321ce6414be3df65d6773 *vignettes/figs/westCoast.tex
 7012cde5b60209165cdc281d888b33ac *vignettes/img/Rlogo.png
 deea1d45830a3efd285ff6dd630cb2dd *vignettes/img/plotmathDefault.pdf
 91b12c045d1f42636f64062d2b59d869 *vignettes/img/plotmathTikz.pdf
@@ -77,5 +84,5 @@ b46bd1ca663f3c0de3c47862f58d61e8 *vignettes/img/xelatexEx.pdf
 ee79774a53dce8a923c4242b65d63d85 *vignettes/refs.bib
 61d7f0a2d41b911054ceb62cea2380de *vignettes/sweavetolst.sty
 ce061082c1a4a24e81053cd623c7c78d *vignettes/tikzCodeBlock.sty
-29388c76e171b2ec0c85c4cada3d45ca *vignettes/tikzDevice.Rnw
-e75a59491624989154600cfe33b36579 *vignettes/tikzDeviceVignette.sty
+8437193c234880e07c9b104347f604a7 *vignettes/tikzDevice.Rnw
+c45b4dd0dcf40a9459cff7521d2d55a0 *vignettes/tikzDeviceVignette.sty
